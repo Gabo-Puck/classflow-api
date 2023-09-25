@@ -130,3 +130,5 @@ dist
 .pnp.*
 
 build/
+
+prisma/dev.db
