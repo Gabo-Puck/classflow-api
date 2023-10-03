@@ -1,4 +1,4 @@
-export default interface ResBody {
+export default interface ResBody<D> {
     message: string,
-    data?: any
+    data?: D
 }

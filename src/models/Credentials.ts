@@ -1,4 +1,4 @@
-export default interface Credentials {
-    email: string
-    password: string
+export default interface UserJwt {
+    role: string
+    id: number
 }

@@ -1,12 +1,14 @@
 import express from "express";
-import UsuarioController from "../controllers/usuarioController";
-const usuarioRouter = express.Router();
-const usuarioController = new UsuarioController();
+import UserController from "@controllers/userController";
+import asyncHandler from "express-async-handler"
 
-usuarioRouter.post("/crear", usuarioController.create.bind(usuarioController));
-usuarioRouter.put("/editar", usuarioController.update.bind(usuarioController));
-usuarioRouter.delete("/:id", usuarioController.delete.bind(usuarioController));
-usuarioRouter.get("/:id", usuarioController.get.bind(usuarioController));
-usuarioRouter.get("/", usuarioController.getAll.bind(usuarioController));
+const usuarioRouter = express.Router();
+const usuarioController = new UserController();
+
+usuarioRouter.post("/crear", asyncHandler(usuarioController.create.bind(usuarioController)));
+usuarioRouter.put("/editar", asyncHandler(usuarioController.update.bind(usuarioController)));
+usuarioRouter.delete("/:id", asyncHandler(usuarioController.delete.bind(usuarioController)));
+usuarioRouter.get("/:id", asyncHandler(usuarioController.get.bind(usuarioController)));
+usuarioRouter.get("/", asyncHandler(usuarioController.getAll.bind(usuarioController)));
 
 export default usuarioRouter;

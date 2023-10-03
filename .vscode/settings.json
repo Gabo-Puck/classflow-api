@@ -8,5 +8,6 @@
             "database": "${workspaceFolder:Classflow-api}/prisma/dev.db"
         }
     ],
-    "sqltools.useNodeRuntime": true
+    "sqltools.useNodeRuntime": true,
+    "cmake.configureOnOpen": false
 }

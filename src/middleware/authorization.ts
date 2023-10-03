@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import ResBody from "../types/Response";
+import ResBody from "@appTypes/Response";
 import jwt, { Jwt, JwtPayload, VerifyErrors } from "jsonwebtoken";
-import { UserData } from "types/UserData";
+import { UserData } from "@appTypes/UserData";
+import ErrorService from "@appTypes/Error";
 
 
 
@@ -19,21 +20,18 @@ export default class AuthorizationMiddleware {
         const { token } = req;
 
         if (token === undefined) {
-            const response: ResBody = {
+            const response: ResBody<{}> = {
                 message: "Acceso no autorizado",
                 data: {}
             };
-            return res.status(403).json(response);
+            res.status(403).json(response);
+            return
         }
         jwt.verify(token, 'getkeyfromenv', function (params: VerifyErrors | null, decoded: JwtPayload | undefined | string | UserData) {
 
             if (params !== null) {
                 console.log(params);
-                const response: ResBody = {
-                    message: "Ha ocurrido un error en la decodificación del token",
-                    data: params
-                };
-                return res.status(403).json(response);
+                throw new ErrorService("Ha ocurrido un error en la decodificación del token", params, 403);
             }
             if (decoded !== undefined) {
                 req.userData = decoded as UserData;

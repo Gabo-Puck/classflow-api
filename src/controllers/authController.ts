@@ -1,44 +1,48 @@
-
-interface AuthResponse {
-    token: string;
-}
 import { Request, Response, NextFunction } from "express";
-import ResBody from "../types/Response";
-import jwt, { Jwt, JwtPayload, VerifyErrors } from "jsonwebtoken";
-import AuthService from "../services/authService";
-import Credentials from "../models/Credentials";
+import ResBody from "@appTypes/Response";
+import AuthService from "@services/authService";
+import UserJwt from "@models/Credentials";
+import UserService from "@services/usuarioService";
+import { Prisma, User } from "@prisma/client";
+import ErrorService from "@appTypes/Error";
+import HashService from "@services/hashService";
 
 
 
 export default class AuthController {
     authService = new AuthService();
-    async showToken(req: Request, res: Response, next: NextFunction) {
-        if (!req.userData) {
-            req.userData = {
-                email: "",
-                id: 1,
-                password: ""
-            }
-        }
-        let { userData } = req;
-        let response: ResBody;
-        try {
-            const welcomeMessage = await this.authService.printMessage(userData);
-            response = {
-                message: "Greetings!",
-                data: welcomeMessage
-            }
-        } catch (error) {
-            response = {
-                message: "Algo ha salido mal validando tu token",
-                data: error
-            }
-        }
-        return res.status(200).json(response);
-    }
+    userService = new UserService();
+    hashService = new HashService();
     async getToken(req: Request, res: Response, next: NextFunction) {
-        let credentials = req.body as Credentials;
-        const response = await this.authService.getToken(credentials);
-        return res.status(200).json(response);
+        console.log("XD");
+        let user = req.body as Prisma.UserCreateInput;
+        //extract values from body
+        let { password, email } = user;
+        //search user by email
+        let userFound = await this.userService.getUserByEmail(email);
+        //no user found validation
+        if (userFound === null) {
+            throw new ErrorService("No se encontro un usuario con ese correo", user, 404);
+        }
+        //get user found by email hashed password
+        let { password: passwordFound, id, role } = userFound;
+        //hash password from body
+        let hashedPassword = await this.hashService.hashData(password);
+        //same password validation
+        if (hashedPassword !== passwordFound) {
+            throw new ErrorService("La contraseña es incorrecta", user, 403);
+        }
+        //user verified, generate token
+        let token = await this.authService.getToken({
+            id,
+            role
+        })
+        res.status(200).json(token);
+        return;
     }
+    // async getToken(req: Request, res: Response, next: NextFunction) {
+    //     let credentials = req.body as UserJwt;
+    //     const response = await this.authService.getToken(credentials);
+    //     res.status(200).json(response);
+    // }
 }

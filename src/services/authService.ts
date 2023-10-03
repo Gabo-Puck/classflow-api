@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
-import Credentials from "../models/Credentials";
-import { UserData } from "../types/UserData";
+import UserJwt from "@models/Credentials";
+import { UserData } from "@appTypes/UserData";
 export default class AuthService {
-    public async getToken(credentials: Credentials): Promise<string> {
+    public async getToken(credentials: UserJwt): Promise<string> {
         return new Promise((resolve, reject) => {
             //fetch userData based on credentials
 

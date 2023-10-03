@@ -1,4 +1,11 @@
 import dotenv from "dotenv";
 dotenv.config();
-export const TEST = process.env.TEST;
-export const PORT = process.env.PORT;
+function loadEnvValue(key: string) {
+    let value = process.env[key];
+    if (value === undefined)
+        throw new Error(`Fatal error: ${key} is missing in environment!`)
+    return value;
+}
+export const PORT = loadEnvValue("PORT");
+export const CIPHER_IV = loadEnvValue("CIPHER_IV");
+export const CIPHER_SECRET = loadEnvValue("CIPHER_SECRET");
