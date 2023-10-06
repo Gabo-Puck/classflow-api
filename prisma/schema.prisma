@@ -11,13 +11,48 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  name     String
-  lastname String
-  role     String
-  password String
-  posts    Post[]
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  name          String
+  lastname      String
+  role          String
+  password      String
+  emailVerified Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now())
+  posts         Post[]
+  TermTemplate  TermTemplate[]
+}
+
+model TermTemplate {
+  id          Int                   @id @default(autoincrement())
+  name        String
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @default(now())
+  creatorId   Int
+  creator     User                  @relation(fields: [creatorId], references: [id])
+  termDetails TermTemplateDetails[]
+}
+
+model TermTemplateDetails {
+  id                            Int                             @id @default(autoincrement())
+  name                          String
+  value                         Int
+  createdAt                     DateTime                        @default(now())
+  updatedAt                     DateTime                        @default(now())
+  termTemplate                  TermTemplate                    @relation(fields: [termTemplateId], references: [id])
+  termTemplateId                Int
+  TermTemplateDetailsCategories TermTemplateDetailsCategories[]
+}
+
+model TermTemplateDetailsCategories {
+  id                    Int                 @id @default(autoincrement())
+  name                  String
+  value                 Int
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @default(now())
+  termTemplateDetailsId Int
+  termTemplateDetails   TermTemplateDetails @relation(fields: [termTemplateDetailsId], references: [id])
 }
 
 model Post {
