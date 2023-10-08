@@ -1,5 +1,5 @@
 import express from "express";
-import termTemplateController from "@controllers/term-template-controller";
+import termTemplateController from "@controllers/term-template.controller";
 import asyncHandler from "express-async-handler"
 
 const termTemplates = express.Router();

@@ -2,14 +2,14 @@ import 'module-alias/register';
 import express, { Application, Request, Response, NextFunction } from "express";
 
 import morgan from "morgan";
-import routerPing from "@routes/ping";
-import authRouter from "@routes/auth";
-import AuthorizationMiddleware from "@middleware/authorization";
+import routerPing from "@routes/ping.router";
+import authRouter from "@routes/auth.router";
+import AuthorizationMiddleware from "@middleware/authorization.middleware";
 import { PORT } from "./env";
-import usuarioRouter from "@routes/usuario";
+import usuarioRouter from "@routes/user.router";
 import cors from "cors";
 import ErrorService from "@appTypes/Error";
-import termTemplates from '@routes/term-template';
+import termTemplates from '@routes/term-template.router';
 
 const port = PORT || 8000;
 const app = express();

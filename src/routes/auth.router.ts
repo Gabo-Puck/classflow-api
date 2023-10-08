@@ -1,6 +1,6 @@
 import express from "express";
-import AuthController from "@controllers/authController";
-import VerifyToken from "@middleware/authorization";
+import AuthController from "@controllers/auth.controller";
+import VerifyToken from "@middleware/authorization.middleware";
 import asyncHandler from "express-async-handler"
 
 const authRouter = express.Router();

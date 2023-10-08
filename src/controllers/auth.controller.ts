@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import ResBody from "@appTypes/Response";
-import AuthService from "@services/auth-service";
+import AuthService from "@services/auth.service";
 import UserJwt from "@models/Credentials";
-import UserService from "@services/usuario-service";
+import UserService from "@services/user.service";
 import { Prisma, User } from "@prisma/client";
 import ErrorService from "@appTypes/Error";
-import HashService from "@services/hash-service";
+import HashService from "@services/hash.service";
 
 
 

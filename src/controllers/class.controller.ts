@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import ResBody from "@appTypes/Response";
 import { Prisma } from "@prisma/client";
-import TermTemplateService from "@services/term-template-service";
+import TermTemplateService from "@services/term-template.service";
 
 export default class TermTemplateController {
     termTemplateService = new TermTemplateService();
