@@ -9,6 +9,7 @@ import { PORT } from "./env";
 import usuarioRouter from "@routes/usuario";
 import cors from "cors";
 import ErrorService from "@appTypes/Error";
+import termTemplates from '@routes/term-template';
 
 const port = PORT || 8000;
 const app = express();
@@ -22,6 +23,7 @@ app.use("/", auth.getToken)
 app.use("/ping", routerPing);
 app.use("/authorization", authRouter);
 app.use("/usuario", usuarioRouter);
+app.use("/term-templates", auth.verifyToken, termTemplates);
 
 //error handler for service errors 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {

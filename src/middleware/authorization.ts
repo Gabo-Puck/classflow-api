@@ -3,6 +3,7 @@ import ResBody from "@appTypes/Response";
 import jwt, { Jwt, JwtPayload, VerifyErrors } from "jsonwebtoken";
 import { UserData } from "@appTypes/UserData";
 import ErrorService from "@appTypes/Error";
+import { JWT_SECRET } from "@env";
 
 
 
@@ -27,7 +28,7 @@ export default class AuthorizationMiddleware {
             res.status(403).json(response);
             return
         }
-        jwt.verify(token, 'getkeyfromenv', function (params: VerifyErrors | null, decoded: JwtPayload | undefined | string | UserData) {
+        jwt.verify(token, JWT_SECRET, function (params: VerifyErrors | null, decoded: JwtPayload | undefined | string | UserData) {
 
             if (params !== null) {
                 console.log(params);

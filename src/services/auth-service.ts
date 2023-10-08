@@ -1,13 +1,14 @@
 import jwt from "jsonwebtoken";
 import UserJwt from "@models/Credentials";
 import { UserData } from "@appTypes/UserData";
+import { JWT_SECRET } from "@env";
 export default class AuthService {
     public async getToken(credentials: UserJwt): Promise<string> {
         return new Promise((resolve, reject) => {
             //fetch userData based on credentials
 
             //create token from data and a secret
-            jwt.sign(credentials, 'getkeyfromenv', (error: Error | null, token: string | undefined) => {
+            jwt.sign(credentials, JWT_SECRET, (error: Error | null, token: string | undefined) => {
                 if (error != null || token === undefined) {
                     reject(error)
                     return;

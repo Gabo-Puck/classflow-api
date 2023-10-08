@@ -19,7 +19,7 @@ model User {
   password      String
   emailVerified Boolean        @default(false)
   createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   posts         Post[]
   TermTemplate  TermTemplate[]
 }
@@ -28,9 +28,9 @@ model TermTemplate {
   id          Int                   @id @default(autoincrement())
   name        String
   createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
   creatorId   Int
-  creator     User                  @relation(fields: [creatorId], references: [id])
+  creator     User                  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   termDetails TermTemplateDetails[]
 }
 
@@ -39,10 +39,10 @@ model TermTemplateDetails {
   name                          String
   value                         Int
   createdAt                     DateTime                        @default(now())
-  updatedAt                     DateTime                        @default(now())
-  termTemplate                  TermTemplate                    @relation(fields: [termTemplateId], references: [id])
+  updatedAt                     DateTime                        @updatedAt
+  termTemplate                  TermTemplate                    @relation(fields: [termTemplateId], references: [id], onDelete: Cascade)
   termTemplateId                Int
-  TermTemplateDetailsCategories TermTemplateDetailsCategories[]
+  termTemplateDetailsCategories TermTemplateDetailsCategories[]
 }
 
 model TermTemplateDetailsCategories {
@@ -50,9 +50,9 @@ model TermTemplateDetailsCategories {
   name                  String
   value                 Int
   createdAt             DateTime            @default(now())
-  updatedAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
   termTemplateDetailsId Int
-  termTemplateDetails   TermTemplateDetails @relation(fields: [termTemplateDetailsId], references: [id])
+  termTemplateDetails   TermTemplateDetails @relation(fields: [termTemplateDetailsId], references: [id], onDelete: Cascade)
 }
 
 model Post {

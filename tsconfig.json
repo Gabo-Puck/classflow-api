@@ -18,7 +18,9 @@
       "@models/*": ["src/models/*"],
       "@routes/*": ["src/routes/*"],
       "@services/*": ["src/services/*"],
-      "@appTypes/*": ["src/types/*"]
+      "@appTypes/*": ["src/types/*"],
+      "@libs/*": ["src/libs/*"],
+      "@env": ["src/env"]
     },
     "typeRoots": ["src/src/@types", "src/node_modules/@types"],
     "sourceMap": true

@@ -1,1 +1,1 @@
-SELECT * FROM User
+SELECT * FROM TermTemplateDetails WHERE id = 1
