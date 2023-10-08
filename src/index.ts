@@ -11,6 +11,8 @@ import cors from "cors";
 import ErrorService from "@appTypes/Error";
 import termTemplates from '@routes/term-template.router';
 import classRouter from '@routes/class.router';
+import groupsRouter from '@routes/groups.router';
+
 
 const port = PORT || 8000;
 const app = express();
@@ -26,6 +28,7 @@ app.use("/authorization", authRouter);
 app.use("/user", usuarioRouter);
 app.use("/term-templates", auth.verifyToken, termTemplates);
 app.use("/classes", auth.verifyToken, classRouter);
+app.use("/group", auth.verifyToken, groupsRouter);
 
 //error handler for service errors 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {

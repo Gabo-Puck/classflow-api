@@ -2,25 +2,23 @@
 import { Request, Response, NextFunction } from "express";
 import ResBody from "@appTypes/Response";
 import { Prisma } from "@prisma/client";
-import TermTemplateService from "@services/term-template.service";
+import GroupsService from "@services/groups.service";
 
-export default class TermTemplateController {
-    termTemplateService = new TermTemplateService();
+export default class GroupsController {
+    groupsService = new GroupsService();
     public async create(req: Request, res: Response, next: NextFunction) {
-        console.log("object");
-        let { body, userData: { id } } = req;
-        const usuario = await this.termTemplateService.createTemplate(body, id);
+        let { body } = req;
+        const grupo = await this.groupsService.createGroup(body);
         const response: ResBody<any> = {
-            message: "Usuario creado correctamente",
-            data: usuario
+            message: "Grupo creado correctamente",
+            data: grupo
         }
         res.status(200).json(response);
         return
     }
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
-        let { email, name } = req.body;
-        const usuarios = await this.termTemplateService.getAllTemplates();
+        const usuarios = await this.groupsService.getAllTemplates();
         const response: ResBody<any[]> = {
             message: "",
             data: usuarios
@@ -32,47 +30,45 @@ export default class TermTemplateController {
     public async get(req: Request, res: Response, next: NextFunction) {
         let { id } = req.params;
         let response: ResBody<any>;
-        const usuario = await this.termTemplateService.getTermTemplatesDetails(Number(id));
+        const grupo = await this.groupsService.getGroupsDetails(Number(id));
         response = {
             message: "",
-            data: usuario
+            data: grupo
         }
         res.status(200).json(response);
         return
 
     }
     public async getAllByUser(req: Request, res: Response, next: NextFunction) {
-        let { userData: { id } } = req;
+        let { userData: { id }, params: { idClass } } = req;
         let response: ResBody<any>;
-        const usuario = await this.termTemplateService.getTemplatesByUser(Number(id));
+        const grupo = await this.groupsService.getGroupsByUser(Number(idClass), Number(id));
         response = {
             message: "",
-            data: usuario
+            data: grupo
         }
         res.status(200).json(response);
         return
 
     }
     public async update(req: Request, res: Response, next: NextFunction) {
-        let { body, userData: { id } } = req;
-
-
-        const usuario = await this.termTemplateService.updateTemplate(body, id);
+        let { body } = req;
+        const grupo = await this.groupsService.updateGroup(body);
         const response: ResBody<any> = {
-            message: "Usuario actualizado correctamente",
-            data: usuario
+            message: "Grupo actualizado correctamente",
+            data: grupo
         }
         res.status(200).json(response);
         return
     }
-    public async delete(req: Request, res: Response, next: NextFunction) {
+    public async archive(req: Request, res: Response, next: NextFunction) {
         let { id } = req.params;
         let response: ResBody<any>;
 
-        const usuario = await this.termTemplateService.deleteTemplate(Number(id));
+        const grupo = await this.groupsService.archiveGroup(Number(id));
         response = {
-            message: "Usuario eliminado correctamente",
-            data: usuario
+            message: "Grupo archivado correctamente",
+            data: grupo
         }
         res.status(200).json(response);
         return

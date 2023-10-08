@@ -1,0 +1,5 @@
+export const GROUP_ROLES = {
+    PROFESSOR: "PROFESSOR",
+    MEMBER: "MEMBER",
+    MODERATOR: "MODERATOR"
+}

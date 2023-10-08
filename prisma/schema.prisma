@@ -24,6 +24,20 @@ model User {
   TermTemplate     TermTemplate[]
   classEnrollments ClassEnrollment[]
   classesCreated   Class[]
+  GroupDetails     GroupDetails[]
+  Deliverable      Deliverable[]
+}
+
+model Group {
+  id        Int      @id @default(autoincrement())
+  name      String
+  classId   Int
+  class     Class    @relation(fields: [classId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  archived  Boolean  @default(false)
+  GroupDetails GroupDetails[]
+  Assignment   Assignment[]
 }
 
 model Class {
@@ -40,6 +54,87 @@ model Class {
   terms            Term[]
   professor        User              @relation(fields: [creatorId], references: [id])
   enrolledStudents ClassEnrollment[]
+  Group            Group[]
+}
+
+model GroupDetails {
+  group     Group    @relation(fields: [groupId], references: [id])
+  groupId   Int
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  joinedAt  DateTime @default(now())
+  groupRole String
+  status    String   @default("ACTIVE")
+
+  @@id([groupId, userId])
+}
+
+model Assignment {
+  id           Int            @id @default(autoincrement())
+  title        String
+  categoryId   Int
+  category     TermCategories @relation(fields: [categoryId], references: [id])
+  latePenalty  Boolean        @default(false)
+  penaltyValue Decimal        @default(0)
+  dueAt        DateTime
+  groupId      Int
+  formId       Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  form         Form?          @relation(fields: [formId], references: [id])
+  group        Group          @relation(fields: [groupId], references: [id])
+  Deliverable  Deliverable[]
+}
+
+model Deliverable {
+  id                Int                 @id @default(autoincrement())
+  assignmentId      Int
+  studentId         Int
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  delivered         Boolean             @default(false)
+  deliveredAt       DateTime?
+  graded            Boolean             @default(false)
+  finalGrade        Decimal             @default(0)
+  assignment        Assignment          @relation(fields: [assignmentId], references: [id])
+  student           User                @relation(fields: [studentId], references: [id])
+  FileDeliverable   FileDeliverable[]
+  NoteDeliverable   NoteDeliverable[]
+  AnswerDeliverable AnswerDeliverable[]
+}
+
+model FileDeliverable {
+  id            Int         @id @default(autoincrement())
+  filename      String
+  direction     String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deliverableId Int
+  deliverable   Deliverable @relation(fields: [deliverableId], references: [id])
+}
+
+model NoteDeliverable {
+  id            Int         @id @default(autoincrement())
+  noteId        Int
+  note          Note        @relation(fields: [noteId], references: [id])
+  deliverableId Int
+  deliverable   Deliverable @relation(fields: [deliverableId], references: [id])
+}
+
+model Note {
+  id              Int               @id @default(autoincrement())
+  NoteDeliverable NoteDeliverable[]
+}
+
+model AnswerDeliverable {
+  id            Int         @id @default(autoincrement())
+  deliverableId Int
+  deliverable   Deliverable @relation(fields: [deliverableId], references: [id])
+}
+
+model Form {
+  id         Int          @id @default(autoincrement())
+  Assignment Assignment[]
 }
 
 model ClassEnrollment {
@@ -64,13 +159,14 @@ model Term {
 }
 
 model TermCategories {
-  id          Int      @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   name        String
   value       Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   termId      Int
-  termDetails Term     @relation(fields: [termId], references: [id], onDelete: Cascade)
+  termDetails Term         @relation(fields: [termId], references: [id], onDelete: Cascade)
+  Assignment  Assignment[]
 }
 
 model TermTemplate {

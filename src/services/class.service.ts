@@ -4,10 +4,13 @@ import ErrorService from "@appTypes/Error";
 import { ClassModel } from "@models/index";
 import { prisma } from "@libs/prisma"
 import { DefaultArgs } from "@prisma/client/runtime/library";
+import GroupService from "./groups.service";
+import { DEFAULT_GROUP_NAME } from "@appTypes/DefaultGroup";
+import { GROUP_ROLES } from "@appTypes/GroupRoles";
 
 
 export default class ClassService {
-    hashService = new HashService();
+    groupService = new GroupService();
     public async createClass(classPayload: ClassModel, idUser: number) {
         //search for classPayload with the required email
 
@@ -52,6 +55,15 @@ export default class ClassService {
                 }
             }
         })
+        let group = await this.groupService.createGroup({
+            classId: createdClass.id,
+            name: DEFAULT_GROUP_NAME,
+            GroupDetails: [{
+                groupRole: GROUP_ROLES.PROFESSOR,
+                userId: idUser,
+            }]
+        })
+        console.log({ group });
         return createdClass;
     }
     public async deleteClass(id: number): Promise<Partial<ClassModel>> {
