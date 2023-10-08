@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import HashService from "@services/hash.service";
 import ErrorService from "@appTypes/Error";
-import { TermTemplate } from "@models/TermTemplate";
+import { TermTemplate } from "@models/index";
 import { prisma } from "@libs/prisma"
 
 

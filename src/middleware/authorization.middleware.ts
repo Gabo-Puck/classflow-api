@@ -4,6 +4,7 @@ import jwt, { Jwt, JwtPayload, VerifyErrors } from "jsonwebtoken";
 import { UserData } from "@appTypes/UserData";
 import ErrorService from "@appTypes/Error";
 import { JWT_SECRET } from "@env";
+import { ROLES } from "@appTypes/Roles";
 
 
 
@@ -40,4 +41,34 @@ export default class AuthorizationMiddleware {
             next();
         });
     }
+    verifyProfessor(req: Request, res: Response, next: NextFunction) {
+        const { userData: { role } } = req;
+        if (!role || role !== ROLES.PROFESSOR) {
+            const response: ResBody<{}> = {
+                message: "No tienes los permisos suficientes para este recurso",
+                data: {
+                    role: ROLES.PROFESSOR
+                }
+            };
+            res.status(405).json(response);
+            return
+        }
+        next();
+
+    }
+    verifyStudent(req: Request, res: Response, next: NextFunction) {
+        const { userData: { role } } = req;
+        if (!role || role !== ROLES.STUDENT) {
+            const response: ResBody<{}> = {
+                message: "No tienes los permisos suficientes para este recurso",
+                data: {
+                    role: ROLES.STUDENT
+                }
+            };
+            res.status(405).json(response);
+            return
+        }
+        next();
+    }
+
 }

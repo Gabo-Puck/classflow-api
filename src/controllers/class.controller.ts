@@ -2,17 +2,17 @@
 import { Request, Response, NextFunction } from "express";
 import ResBody from "@appTypes/Response";
 import { Prisma } from "@prisma/client";
-import TermTemplateService from "@services/term-template.service";
+import ClassService from "@services/class.service";
 
-export default class TermTemplateController {
-    termTemplateService = new TermTemplateService();
+export default class ClassController {
+    classService = new ClassService();
     public async create(req: Request, res: Response, next: NextFunction) {
         console.log("object");
         let { body, userData: { id } } = req;
-        const usuario = await this.termTemplateService.createTemplate(body, id);
+        const classResponse = await this.classService.createClass(body, id);
         const response: ResBody<any> = {
-            message: "Usuario creado correctamente",
-            data: usuario
+            message: "Clase creada correctamente",
+            data: classResponse
         }
         res.status(200).json(response);
         return
@@ -20,7 +20,7 @@ export default class TermTemplateController {
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
         let { email, name } = req.body;
-        const usuarios = await this.termTemplateService.getAllTemplates();
+        const usuarios = await this.classService.getAllClasses();
         const response: ResBody<any[]> = {
             message: "",
             data: usuarios
@@ -32,22 +32,47 @@ export default class TermTemplateController {
     public async get(req: Request, res: Response, next: NextFunction) {
         let { id } = req.params;
         let response: ResBody<any>;
-        const usuario = await this.termTemplateService.getTermTemplatesDetails(Number(id));
+        const classResponse = await this.classService.getClassDetails(Number(id));
         response = {
             message: "",
-            data: usuario
+            data: classResponse
         }
         res.status(200).json(response);
         return
 
     }
-    public async getAllByUser(req: Request, res: Response, next: NextFunction) {
+    public async archive(req: Request, res: Response, next: NextFunction) {
+        let { id } = req.params;
+        let response: ResBody<any>;
+        const classResponse = await this.classService.archiveClass(Number(id));
+        response = {
+            message: "Clase archivada correctamente",
+            data: classResponse
+        }
+        res.status(200).json(response);
+        return
+
+    }
+
+    public async getAllByProfessor(req: Request, res: Response, next: NextFunction) {
         let { userData: { id } } = req;
         let response: ResBody<any>;
-        const usuario = await this.termTemplateService.getTemplatesByUser(Number(id));
+        const classResponse = await this.classService.getClassesByProfessor(Number(id));
         response = {
             message: "",
-            data: usuario
+            data: classResponse
+        }
+        res.status(200).json(response);
+        return
+
+    }
+    public async getAllByStudent(req: Request, res: Response, next: NextFunction) {
+        let { userData: { id } } = req;
+        let response: ResBody<any>;
+        const classResponse = await this.classService.getClassesByStudent(Number(id));
+        response = {
+            message: "",
+            data: classResponse
         }
         res.status(200).json(response);
         return
@@ -57,10 +82,10 @@ export default class TermTemplateController {
         let { body, userData: { id } } = req;
 
 
-        const usuario = await this.termTemplateService.updateTemplate(body, id);
+        const classResponse = await this.classService.updateClass(body, id);
         const response: ResBody<any> = {
-            message: "Usuario actualizado correctamente",
-            data: usuario
+            message: "Clase actualizada correctamente",
+            data: classResponse
         }
         res.status(200).json(response);
         return
@@ -69,10 +94,10 @@ export default class TermTemplateController {
         let { id } = req.params;
         let response: ResBody<any>;
 
-        const usuario = await this.termTemplateService.deleteTemplate(Number(id));
+        const classResponse = await this.classService.deleteClass(Number(id));
         response = {
-            message: "Usuario eliminado correctamente",
-            data: usuario
+            message: "Clase eliminada correctamente",
+            data: classResponse
         }
         res.status(200).json(response);
         return
