@@ -10,11 +10,12 @@ import { ROLES } from "@appTypes/Roles";
 
 export default class AuthorizationMiddleware {
     getToken(req: Request, res: Response, next: NextFunction) {
-        const bearerHeader = req.headers["authorization"];
-        if (bearerHeader !== undefined) {
-            const bearer = bearerHeader.split(' ');
-            const bearerToken = bearer[1];
-            req.token = bearerToken;
+        const cookieBearer = req.cookies["access_token"]
+        console.log({ cookieBearer });
+        if (cookieBearer !== undefined) {
+            const bearer = cookieBearer.split(' ');
+            const jwt = bearer[1];
+            req.token = jwt;
         }
         next();
     }
@@ -22,12 +23,7 @@ export default class AuthorizationMiddleware {
         const { token } = req;
 
         if (token === undefined) {
-            const response: ResBody<{}> = {
-                message: "Acceso no autorizado",
-                data: {}
-            };
-            res.status(403).json(response);
-            return
+            throw new ErrorService("No se encontro el token", {}, 401);
         }
         jwt.verify(token, JWT_SECRET, function (params: VerifyErrors | null, decoded: JwtPayload | undefined | string | UserData) {
 
@@ -70,5 +66,7 @@ export default class AuthorizationMiddleware {
         }
         next();
     }
+
+
 
 }

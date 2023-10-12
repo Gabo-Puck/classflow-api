@@ -7,6 +7,7 @@ import { DefaultArgs } from "@prisma/client/runtime/library";
 import GroupService from "./groups.service";
 import { DEFAULT_GROUP_NAME } from "@appTypes/DefaultGroup";
 import { GROUP_ROLES } from "@appTypes/GroupRoles";
+import { EnrollmentStatus } from "@appTypes/EnrollmentTypes";
 
 
 export default class ClassService {
@@ -198,7 +199,24 @@ export default class ClassService {
             }
             throw error;
         }
+    }
 
+    public async isStudentInClass(classId: number, studentId: number) {
+        try {
+            const result = await prisma.classEnrollment.findFirstOrThrow({
+                where: {
+                    studentId,
+                    classId,
+                    status: EnrollmentStatus.ENROLLED
+                }
+            });
+            return true;
+        } catch (error: any) {
+            if (error.code === 'P2025') {
+                return false;
+            }
+            throw error;
+        }
     }
     public async getAllClasses() {
         const result = await prisma.class.findMany();

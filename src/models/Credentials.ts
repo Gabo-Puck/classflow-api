@@ -1,4 +1,5 @@
 export default interface UserJwt {
     role: string
-    id: number
+    id: number,
+    classId?: number
 }

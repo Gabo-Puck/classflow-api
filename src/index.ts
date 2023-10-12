@@ -8,6 +8,7 @@ import AuthorizationMiddleware from "@middleware/authorization.middleware";
 import { PORT } from "./env";
 import usuarioRouter from "@routes/user.router";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import ErrorService from "@appTypes/Error";
 import termTemplates from '@routes/term-template.router';
 import classRouter from '@routes/class.router';
@@ -19,6 +20,7 @@ const app = express();
 const auth = new AuthorizationMiddleware();
 
 app.use(cors())
+app.use(cookieParser())
 app.use(express.json());
 app.use(express.static("public"));
 app.use(morgan("tiny"));

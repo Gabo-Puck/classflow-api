@@ -6,15 +6,16 @@ import UserService from "@services/user.service";
 import { Prisma, User } from "@prisma/client";
 import ErrorService from "@appTypes/Error";
 import HashService from "@services/hash.service";
+import ClassService from "@services/class.service";
 
 
 
 export default class AuthController {
     authService = new AuthService();
     userService = new UserService();
+    classService = new ClassService();
     hashService = new HashService();
-    async getToken(req: Request, res: Response, next: NextFunction) {
-        console.log("XD");
+    async getTokenUser(req: Request, res: Response, next: NextFunction) {
         let user = req.body as Prisma.UserCreateInput;
         //extract values from body
         let { password, email } = user;
@@ -37,12 +38,28 @@ export default class AuthController {
             id,
             role
         })
+        res.cookie("access_token", `Bearer ${token}`);
         res.status(200).json(token);
         return;
     }
-    // async getToken(req: Request, res: Response, next: NextFunction) {
-    //     let credentials = req.body as UserJwt;
-    //     const response = await this.authService.getToken(credentials);
-    //     res.status(200).json(response);
-    // }
+    async getTokenClass(req: Request, res: Response, next: NextFunction) {
+        let { classId } = req.body;
+        let { userData } = req;
+        //extract values from token
+        let { id: studentId } = userData;
+        //check if student is enrolled in
+        let enrolled = await this.classService.isStudentInClass(classId, studentId);
+        //no user enrolled validation
+        if (!enrolled) {
+            throw new ErrorService("No tienes acceso a esta clase", {}, 403);
+        }
+        //user verified, generate token
+        let token = await this.authService.getToken({
+            ...userData,
+            classId: classId
+        })
+        res.cookie("access_token", `Bearer ${token}`);
+        res.status(200).json(token);
+        return;
+    }
 }

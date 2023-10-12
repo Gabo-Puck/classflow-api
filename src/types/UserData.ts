@@ -1,5 +1,6 @@
 export interface UserData {
     id: number
     email: string
-    role: string
+    role: string,
+    classId?: number
 }

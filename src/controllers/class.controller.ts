@@ -76,7 +76,6 @@ export default class ClassController {
         }
         res.status(200).json(response);
         return
-
     }
     public async update(req: Request, res: Response, next: NextFunction) {
         let { body, userData: { id } } = req;
