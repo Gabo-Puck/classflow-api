@@ -48,7 +48,7 @@ export default class AuthController {
         //extract values from token
         let { id: studentId } = userData;
         //check if student is enrolled in
-        let enrolled = await this.classService.isStudentInClass(classId, studentId);
+        let enrolled = await this.classService.isInClass(classId, studentId);
         //no user enrolled validation
         if (!enrolled) {
             throw new ErrorService("No tienes acceso a esta clase", {}, 403);

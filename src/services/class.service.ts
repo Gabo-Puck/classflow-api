@@ -201,13 +201,23 @@ export default class ClassService {
         }
     }
 
-    public async isStudentInClass(classId: number, studentId: number) {
+    public async isInClass(classId: number, idUser: number) {
         try {
+            //either be an student enrolled in class or the profesor
             const result = await prisma.classEnrollment.findFirstOrThrow({
                 where: {
-                    studentId,
-                    classId,
-                    status: EnrollmentStatus.ENROLLED
+                    OR: [{
+                        studentId: idUser,
+                        classId,
+                        status: EnrollmentStatus.ENROLLED,
+                    }, {
+                        classId,
+                        class: {
+                            professor: {
+                                id: idUser
+                            }
+                        }
+                    }]
                 }
             });
             return true;
