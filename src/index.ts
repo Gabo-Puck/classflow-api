@@ -5,7 +5,7 @@ import morgan from "morgan";
 import routerPing from "@routes/ping.router";
 import authRouter from "@routes/auth.router";
 import AuthorizationMiddleware from "@middleware/authorization.middleware";
-import { PORT } from "./env";
+import { ORIGINS, PORT } from "./env";
 import usuarioRouter from "@routes/user.router";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -19,7 +19,10 @@ const port = PORT || 8000;
 const app = express();
 const auth = new AuthorizationMiddleware();
 
-app.use(cors())
+app.use(cors({
+    origin: ORIGINS,
+    credentials:true
+}))
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.static("public"));

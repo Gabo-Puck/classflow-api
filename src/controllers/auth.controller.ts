@@ -7,6 +7,7 @@ import { Prisma, User } from "@prisma/client";
 import ErrorService from "@appTypes/Error";
 import HashService from "@services/hash.service";
 import ClassService from "@services/class.service";
+import { DOMAIN } from "@env";
 
 
 
@@ -38,7 +39,12 @@ export default class AuthController {
             id,
             role
         })
-        res.cookie("access_token", `Bearer ${token}`);
+        res.cookie("access_token", `Bearer ${token}`, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            domain: DOMAIN,
+        });
         res.status(200).json(token);
         return;
     }
@@ -58,7 +64,12 @@ export default class AuthController {
             ...userData,
             classId: classId
         })
-        res.cookie("access_token", `Bearer ${token}`);
+        res.cookie("access_token", `Bearer ${token}`, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            domain: DOMAIN,
+        });
         res.status(200).json(token);
         return;
     }

@@ -21,7 +21,7 @@ export default class AuthorizationMiddleware {
     }
     verifyToken(req: Request, res: Response, next: NextFunction) {
         const { token } = req;
-
+        console.log({token});
         if (token === undefined) {
             throw new ErrorService("No se encontro el token", {}, 401);
         }

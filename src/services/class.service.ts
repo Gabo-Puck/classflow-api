@@ -148,6 +148,7 @@ export default class ClassService {
         return result;
     }
     public async getClassesByStudent(idUser: number) {
+        console.log("HERE");
         const result = await prisma.class.findMany({
             where: {
                 enrolledStudents: {
@@ -179,6 +180,7 @@ export default class ClassService {
     }
     public async getClassDetails(id: number) {
         try {
+            console.log("???????????????XDDDDDDDD");
             const result = await prisma.class.findFirstOrThrow({
                 where: {
                     id,
