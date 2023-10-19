@@ -10,5 +10,5 @@ usuarioRouter.put("/edit", asyncHandler(usuarioController.update.bind(usuarioCon
 usuarioRouter.delete("/:id", asyncHandler(usuarioController.delete.bind(usuarioController)));
 usuarioRouter.get("/:id", asyncHandler(usuarioController.get.bind(usuarioController)));
 usuarioRouter.get("/", asyncHandler(usuarioController.getAll.bind(usuarioController)));
-
+usuarioRouter.get("/validate/:token", asyncHandler(usuarioController.verifyEmail.bind(usuarioController)))
 export default usuarioRouter;

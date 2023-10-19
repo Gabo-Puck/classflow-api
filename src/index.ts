@@ -30,10 +30,10 @@ app.use(morgan("tiny"));
 app.use("/", auth.getToken)
 app.use("/ping", routerPing);
 app.use("/authorization", authRouter);
-app.use("/user", usuarioRouter);
+app.use("/users", usuarioRouter);
 app.use("/term-templates", auth.verifyToken, termTemplates);
 app.use("/classes", auth.verifyToken, classRouter);
-app.use("/group", auth.verifyToken, groupsRouter);
+app.use("/groups", auth.verifyToken, groupsRouter);
 
 //error handler for service errors 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {

@@ -35,7 +35,7 @@ export default class AuthController {
             throw new ErrorService("La contraseña es incorrecta", user, 403);
         }
         //user verified, generate token
-        let token = await this.authService.getToken({
+        let token = await this.authService.getTokenAccess({
             id,
             role
         })
@@ -60,7 +60,7 @@ export default class AuthController {
             throw new ErrorService("No tienes acceso a esta clase", {}, 403);
         }
         //user verified, generate token
-        let token = await this.authService.getToken({
+        let token = await this.authService.getTokenAccess({
             ...userData,
             classId: classId
         })
