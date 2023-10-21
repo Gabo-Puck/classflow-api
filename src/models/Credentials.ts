@@ -1,5 +1,7 @@
 export default interface UserJwt {
+    id: number
     role: string
-    id: number,
+    name: string
+    profilePic: string | null
     classId?: number
 }

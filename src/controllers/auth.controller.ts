@@ -8,6 +8,7 @@ import ErrorService from "@appTypes/Error";
 import HashService from "@services/hash.service";
 import ClassService from "@services/class.service";
 import { DOMAIN } from "@env";
+import { UserData } from "@appTypes/UserData";
 
 
 
@@ -16,6 +17,20 @@ export default class AuthController {
     userService = new UserService();
     classService = new ClassService();
     hashService = new HashService();
+
+    async retrieveUserData(req: Request, res: Response, next: NextFunction) {
+        let response: ResBody<Partial<UserData>> = {
+            message: "Datos obtenidos",
+            data: {
+                role: req.userData.role,
+                name: req.userData.name,
+                profilePic: req.userData.profilePic
+            }
+        }
+        res.status(200).json(response);
+        return
+
+    }
     async getTokenUser(req: Request, res: Response, next: NextFunction) {
         let user = req.body as Prisma.UserCreateInput;
         //extract values from body
@@ -27,7 +42,7 @@ export default class AuthController {
             throw new ErrorService("No se encontro un usuario con ese correo", user, 404);
         }
         //get user found by email hashed password
-        let { password: passwordFound, id, role } = userFound;
+        let { password: passwordFound, id, role, name, profilePic } = userFound;
         //hash password from body
         let hashedPassword = await this.hashService.hashData(password);
         //same password validation
@@ -37,7 +52,9 @@ export default class AuthController {
         //user verified, generate token
         let token = await this.authService.getTokenAccess({
             id,
-            role
+            role,
+            name,
+            profilePic
         })
         res.cookie("access_token", `Bearer ${token}`, {
             httpOnly: true,

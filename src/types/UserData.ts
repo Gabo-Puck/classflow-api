@@ -1,6 +1,7 @@
 export interface UserData {
     id: number
-    email: string
-    role: string,
+    role: string
+    name: string
+    profilePic: string
     classId?: number
 }

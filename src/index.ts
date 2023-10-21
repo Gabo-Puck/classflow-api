@@ -5,7 +5,7 @@ import morgan from "morgan";
 import routerPing from "@routes/ping.router";
 import authRouter from "@routes/auth.router";
 import AuthorizationMiddleware from "@middleware/authorization.middleware";
-import { ORIGINS, PORT } from "./env";
+import { DOMAIN, ORIGINS, PORT } from "./env";
 import usuarioRouter from "@routes/user.router";
 import cors from "cors";
 import cookieParser from "cookie-parser";

@@ -53,6 +53,6 @@ export default class AuthService {
     }
 
     public printMessage(userData: UserData): string {
-        return `Hi user. We'll send a email to ${userData.email} with a cat gif ;)!`;
+        return `Hi user. We'll send a email to ${userData.name} with a cat gif ;)!`;
     }
 }
