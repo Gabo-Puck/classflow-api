@@ -3,5 +3,6 @@ export interface UserData {
     role: string
     name: string
     profilePic: string
+    emailVerified: boolean
     classId?: number
 }

@@ -5,10 +5,14 @@ import { UserData } from "@appTypes/UserData";
 import ErrorService from "@appTypes/Error";
 import { JWT_SECRET } from "@env";
 import { ROLES } from "@appTypes/Roles";
+import UserService from "@services/user.service";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 
 
 export default class AuthorizationMiddleware {
+   
+
     getToken(req: Request, res: Response, next: NextFunction) {
         const cookieBearer = req.cookies["access_token"]
         console.log({ cookieBearer });
@@ -19,9 +23,10 @@ export default class AuthorizationMiddleware {
         }
         next();
     }
+    
     verifyToken(req: Request, res: Response, next: NextFunction) {
         const { token } = req;
-        console.log({token});
+        console.log({ token });
         if (token === undefined) {
             throw new ErrorService("No se encontro el token", {}, 401);
         }

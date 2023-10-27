@@ -3,5 +3,6 @@ export default interface UserJwt {
     role: string
     name: string
     profilePic: string | null
+    emailVerified: boolean
     classId?: number
 }

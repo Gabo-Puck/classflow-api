@@ -42,7 +42,6 @@ export default class UserService {
             <p>Accede al siguiente enlace para validar tu cuenta</p>
             <a href="${CLASSFLOW_HOST_FRONTEND}/validate?token=${token}">Validar cuenta</a>
         `)
-
     }
     public async deleteUser(id: number): Promise<Prisma.UserUncheckedCreateInput> {
         const result = await this.prisma.user.delete({

@@ -31,6 +31,26 @@ export default class AuthController {
         return
 
     }
+    async sendValidation(req: Request, res: Response, next: NextFunction) {
+
+        let { email } = req.body;
+        let userFound = await this.userService.getUserByEmail(email);
+        //no user found validation
+        if (userFound === null) {
+            throw new ErrorService("No se encontro un usuario con ese correo", email, 404);
+        }
+        if (userFound.emailVerified) {
+            throw new ErrorService("Este correo ya se encuentra validado", email, 400);
+        }
+        await this.userService.sendVerificationEmail(email, userFound.id);
+        let response: ResBody<string> = {
+            message: "Correo enviado",
+            data: ""
+        }
+        res.status(200).json(response);
+        return
+
+    }
     async getTokenUser(req: Request, res: Response, next: NextFunction) {
         let user = req.body as Prisma.UserCreateInput;
         //extract values from body
@@ -42,19 +62,25 @@ export default class AuthController {
             throw new ErrorService("No se encontro un usuario con ese correo", user, 404);
         }
         //get user found by email hashed password
-        let { password: passwordFound, id, role, name, profilePic } = userFound;
+        let { password: passwordFound, id, role, name, profilePic, emailVerified } = userFound;
         //hash password from body
         let hashedPassword = await this.hashService.hashData(password);
         //same password validation
         if (hashedPassword !== passwordFound) {
             throw new ErrorService("La contraseña es incorrecta", user, 403);
         }
+        //email not verified yet
+        if (!emailVerified) {
+            throw new ErrorService("No se ha validado el correo", user, 405);
+        }
+
         //user verified, generate token
         let token = await this.authService.getTokenAccess({
             id,
             role,
             name,
-            profilePic
+            profilePic,
+            emailVerified
         })
         res.cookie("access_token", `Bearer ${token}`, {
             httpOnly: true,
