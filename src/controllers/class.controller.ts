@@ -101,4 +101,15 @@ export default class ClassController {
         res.status(200).json(response);
         return
     }
+    public async regenerateCode(req: Request, res: Response, next: NextFunction) {
+        let response: ResBody<any>;
+        let { classId } = req.userData;
+        const classResponse = await this.classService.regenarateCode(classId as number);
+        response = {
+            message: "Código de clase generado correctamente",
+            data: classResponse
+        }
+        res.status(200).json(response);
+        return
+    }
 }

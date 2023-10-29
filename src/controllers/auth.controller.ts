@@ -94,12 +94,15 @@ export default class AuthController {
     async getTokenClass(req: Request, res: Response, next: NextFunction) {
         let { classId } = req.body;
         let { userData } = req;
+        if (!classId)
+            throw new ErrorService("Tienes que pasar una clase como parametro", {}, 400);
         //extract values from token
         let { id: studentId } = userData;
         //check if student is enrolled in
-        let enrolled = await this.classService.isInClass(classId, studentId);
+        let isStudent = await this.classService.isInClassStudent(classId, studentId);
+        let isProfessor = await this.classService.isInClassProfessor(classId, studentId);
         //no user enrolled validation
-        if (!enrolled) {
+        if (!(isStudent || isProfessor)) {
             throw new ErrorService("No tienes acceso a esta clase", {}, 403);
         }
         //user verified, generate token

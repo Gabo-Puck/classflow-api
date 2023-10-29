@@ -18,6 +18,7 @@ export default class AuthorizationMiddleware {
         console.log({ cookieBearer });
         if (cookieBearer !== undefined) {
             const bearer = cookieBearer.split(' ');
+            console.log({bearer});
             const jwt = bearer[1];
             req.token = jwt;
         }

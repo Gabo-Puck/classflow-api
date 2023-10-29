@@ -51,6 +51,7 @@ model Class {
   creatorId        Int
   deletedAt        DateTime?
   archivedAt       DateTime?
+  code             String            @default("")
   terms            Term[]
   professor        User              @relation(fields: [creatorId], references: [id])
   enrolledStudents ClassEnrollment[]

@@ -8,10 +8,12 @@ import GroupService from "./groups.service";
 import { DEFAULT_GROUP_NAME } from "@appTypes/DefaultGroup";
 import { GROUP_ROLES } from "@appTypes/GroupRoles";
 import { EnrollmentStatus } from "@appTypes/EnrollmentTypes";
+import GeneralService from "./general.service";
 
 
 export default class ClassService {
     groupService = new GroupService();
+    generalService = new GeneralService();
     public async createClass(classPayload: ClassModel, idUser: number) {
         //search for classPayload with the required email
 
@@ -36,8 +38,10 @@ export default class ClassService {
         }
         classPayload.creatorId = idUser;
         //parse user input to prisma inseriton obj
+        let code = await this.createClassCode();
         let insertClass = {
             ...classPayload,
+            code,
             terms: {
                 create: classPayload.terms.map(value => ({
                     ...value,
@@ -140,7 +144,8 @@ export default class ClassService {
             include: {
                 _count: {
                     select: {
-                        enrolledStudents: true
+                        enrolledStudents: true,
+
                     }
                 }
             }
@@ -148,11 +153,10 @@ export default class ClassService {
         return result;
     }
     public async getClassesByStudent(idUser: number) {
-        console.log("HERE");
         const result = await prisma.class.findMany({
             where: {
                 enrolledStudents: {
-                    every: {
+                    some: {
                         studentId: idUser
                     }
                 },
@@ -180,7 +184,6 @@ export default class ClassService {
     }
     public async getClassDetails(id: number) {
         try {
-            console.log("???????????????XDDDDDDDD");
             const result = await prisma.class.findFirstOrThrow({
                 where: {
                     id,
@@ -203,25 +206,37 @@ export default class ClassService {
         }
     }
 
-    public async isInClass(classId: number, idUser: number) {
+    public async isInClassStudent(classId: number, idUser: number) {
         try {
             //either be an student enrolled in class or the profesor
             const result = await prisma.classEnrollment.findFirstOrThrow({
                 where: {
-                    OR: [{
-                        studentId: idUser,
-                        classId,
-                        status: EnrollmentStatus.ENROLLED,
-                    }, {
-                        classId,
-                        class: {
-                            professor: {
-                                id: idUser
-                            }
-                        }
-                    }]
+                    studentId: idUser,
+                    classId,
+                    status: EnrollmentStatus.ENROLLED,
                 }
             });
+            console.log({ result });
+            return true;
+        } catch (error: any) {
+            if (error.code === 'P2025') {
+                return false;
+            }
+            throw error;
+        }
+    }
+    public async isInClassProfessor(classId: number, idUser: number) {
+        try {
+            //either be an student enrolled in class or the profesor
+            const result = await prisma.class.findFirstOrThrow({
+                where: {
+                    creatorId: idUser,
+                    id: classId,
+                    archived: false,
+                    deleted: false
+                }
+            });
+            console.log({ result });
             return true;
         } catch (error: any) {
             if (error.code === 'P2025') {
@@ -233,5 +248,37 @@ export default class ClassService {
     public async getAllClasses() {
         const result = await prisma.class.findMany();
         return result;
+    }
+
+    public async getClassByCode(code: string) {
+        const result = await prisma.class.findFirst({
+            where: {
+                code,
+                archived: false,
+                deleted: false
+            }
+        });
+        return result;
+    }
+
+    public async regenarateCode(classId: number) {
+        let code = await this.createClassCode();
+        const result = await prisma.class.update({
+            where: {
+                id: classId,
+            },
+            data: {
+                code
+            }
+        })
+        return result;
+    }
+
+    public async createClassCode(): Promise<string> {
+        let code = await this.generalService.generateCode(6);
+        let classFound = await this.getClassByCode(code);
+        if (classFound)
+            return await this.createClassCode();
+        return code;
     }
 }

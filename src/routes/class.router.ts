@@ -12,6 +12,7 @@ classRouter.put("/archive/:id", auth.verifyProfessor.bind(auth), asyncHandler(cl
 classRouter.put("/edit", auth.verifyProfessor.bind(auth), asyncHandler(classController.update.bind(classController)));
 classRouter.get("/students", auth.verifyStudent.bind(auth), asyncHandler(classController.getAllByStudent.bind(classController)));
 classRouter.get("/professor", auth.verifyProfessor.bind(auth), asyncHandler(classController.getAllByProfessor.bind(classController)));
+classRouter.get("/regenerateCode", auth.verifyProfessor.bind(auth), asyncHandler(classController.regenerateCode.bind(classController)));
 classRouter.get("/:id", asyncHandler(classController.get.bind(classController)));
 classRouter.get("/", asyncHandler(classController.getAll.bind(classController)));
 classRouter.delete("/:id", auth.verifyProfessor.bind(auth), asyncHandler(classController.delete.bind(classController)));
