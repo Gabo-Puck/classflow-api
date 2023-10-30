@@ -338,7 +338,9 @@ export default class ClassService {
                         classEnrollments: {
                             some: {
                                 classId,
-                                status: EnrollmentStatus.DROPOUT
+                                status: {
+                                    not: EnrollmentStatus.ENROLLED
+                                }
                             }
                         }
                     }

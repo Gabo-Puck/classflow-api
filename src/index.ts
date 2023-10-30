@@ -13,6 +13,7 @@ import ErrorService from "@appTypes/Error";
 import termTemplates from '@routes/term-template.router';
 import classRouter from '@routes/class.router';
 import groupsRouter from '@routes/groups.router';
+import enrollmentRouter from '@routes/enrollment.router';
 
 
 const port = PORT || 8000;
@@ -34,6 +35,7 @@ app.use("/users", usuarioRouter);
 app.use("/term-templates", auth.verifyToken, termTemplates);
 app.use("/classes", auth.verifyToken, classRouter);
 app.use("/groups", auth.verifyToken, groupsRouter);
+app.use("/enrollments", auth.verifyToken, enrollmentRouter);
 
 //error handler for service errors 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
