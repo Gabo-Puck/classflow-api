@@ -12,6 +12,6 @@ groupsRouter.put("/edit",auth.verifyProfessor, asyncHandler(groupController.upda
 groupsRouter.get("/user/:idClass", asyncHandler(groupController.getAllByUser.bind(groupController)));
 groupsRouter.get("/:id", asyncHandler(groupController.get.bind(groupController)));
 groupsRouter.get("/", asyncHandler(groupController.getAll.bind(groupController)));
-groupsRouter.put("/archive/:id", asyncHandler(groupController.archive.bind(groupController)));
+groupsRouter.post("/archive/:id", asyncHandler(groupController.archive.bind(groupController)));
 
 export default groupsRouter;

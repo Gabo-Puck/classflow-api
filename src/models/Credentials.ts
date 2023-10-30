@@ -4,5 +4,6 @@ export default interface UserJwt {
     name: string
     profilePic: string | null
     emailVerified: boolean
+    email: string
     classId?: number
 }

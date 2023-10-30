@@ -29,7 +29,6 @@ export default class UserController {
     }
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
-        let { email, name } = req.body;
         const usuarios = await this.usuarioService.getAllUsers();
         const response: ResBody<Prisma.UserUncheckedCreateInput[]> = {
             message: "",

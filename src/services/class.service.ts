@@ -256,6 +256,13 @@ export default class ClassService {
                 code,
                 archived: false,
                 deleted: false
+            },
+            include: {
+                _count: {
+                    select: {
+                        enrolledStudents: true
+                    }
+                }
             }
         });
         return result;
@@ -280,5 +287,65 @@ export default class ClassService {
         if (classFound)
             return await this.createClassCode();
         return code;
+    }
+
+    public async enrollStudent(studentId: number, code: string) {
+        let classFound = await this.getClassByCode(code);
+        //validations
+        if (!classFound)
+            throw new ErrorService("No se encontro la clase. Revisa el código", code, 404);
+        if (classFound._count.enrolledStudents >= 30)
+            throw new ErrorService("Esta clase no cuenta con cupo", code, 410);
+        let isEnrolled = await this.isInClassStudent(classFound.id, studentId);
+        if (isEnrolled)
+            throw new ErrorService("Ya te encuentras inscrito en la clase", code, 400);
+        let enroll = await prisma.classEnrollment.create({
+            data: {
+                status: EnrollmentStatus.ENROLLED,
+                classId: classFound.id,
+                studentId
+            }
+        })
+        return enroll
+    }
+    /**
+    * Retrieves all users that can be invited to a class
+    * This means that retrieves all users that currently are not enrolled in or don't have an 
+    * active enrollment in a specific class
+    * @param classId 
+    * @returns 
+    */
+    public async getAllUsersInvite(classId: number, email: string) {
+        const result = await prisma.user.findMany({
+            take: 10,
+            where: {
+                email: {
+                    contains: email
+                },
+
+                emailVerified: true,
+                OR: [
+                    //retrive all users without enrollment in "classId"
+                    {
+                        classEnrollments: {
+                            none: {
+                                classId
+                            }
+                        }
+                    },
+                    //retrive all users with enrollment in classid but with dropout status
+                    {
+                        classEnrollments: {
+                            some: {
+                                classId,
+                                status: EnrollmentStatus.DROPOUT
+                            }
+                        }
+                    }
+                ],
+
+            }
+        });
+        return result;
     }
 }

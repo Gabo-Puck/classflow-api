@@ -24,7 +24,8 @@ export default class AuthController {
             data: {
                 role: req.userData.role,
                 name: req.userData.name,
-                profilePic: req.userData.profilePic
+                profilePic: req.userData.profilePic,
+                email: req.userData.email
             }
         }
         res.status(200).json(response);
@@ -80,7 +81,8 @@ export default class AuthController {
             role,
             name,
             profilePic,
-            emailVerified
+            emailVerified,
+            email
         })
         res.cookie("access_token", `Bearer ${token}`, {
             httpOnly: true,

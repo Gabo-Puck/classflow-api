@@ -17,6 +17,28 @@ export default class ClassController {
         res.status(200).json(response);
         return
     }
+    public async enroll(req: Request, res: Response, next: NextFunction) {
+        let { userData: { id }, body } = req;
+        const classResponse = await this.classService.enrollStudent(id, body.code);
+        const response: ResBody<any> = {
+            message: "Te has inscrito a la clase",
+            data: classResponse
+        }
+        res.status(200).json(response);
+        return
+    }
+
+    public async getPossibleInvitations(req: Request, res: Response, next: NextFunction) {
+        let { userData: { id }, body } = req;
+        let { email } = req.body;
+        const classResponse = await this.classService.getAllUsersInvite(id,email);
+        const response: ResBody<any> = {
+            message: "",
+            data: classResponse
+        }
+        res.status(200).json(response);
+        return
+    }
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
         let { email, name } = req.body;

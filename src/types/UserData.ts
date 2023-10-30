@@ -4,5 +4,6 @@ export interface UserData {
     name: string
     profilePic: string
     emailVerified: boolean
+    email: string
     classId?: number
 }
