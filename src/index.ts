@@ -14,6 +14,7 @@ import termTemplates from '@routes/term-template.router';
 import classRouter from '@routes/class.router';
 import groupsRouter from '@routes/groups.router';
 import enrollmentRouter from '@routes/enrollment.router';
+import noticeRouter from '@routes/notice.router';
 
 
 const port = PORT || 8000;
@@ -36,6 +37,7 @@ app.use("/term-templates", auth.verifyToken, termTemplates);
 app.use("/classes", auth.verifyToken, classRouter);
 app.use("/groups", auth.verifyToken, groupsRouter);
 app.use("/enrollments", auth.verifyToken, enrollmentRouter);
+app.use("/notices", auth.verifyToken, noticeRouter);
 
 //error handler for service errors 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {

@@ -1,0 +1,14 @@
+-- CreateTable
+CREATE TABLE "Notice" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "classId" INTEGER NOT NULL,
+    "content" TEXT NOT NULL DEFAULT '',
+    "title" TEXT NOT NULL DEFAULT '',
+    "creatorId" INTEGER NOT NULL,
+    "deleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Notice_classId_fkey" FOREIGN KEY ("classId") REFERENCES "Class" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Notice_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);

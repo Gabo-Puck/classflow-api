@@ -1,3 +1,4 @@
+export * from "./Notice";
 export * from "./Credentials";
 export * from "./Term";
 export * from "./TermTemplate";

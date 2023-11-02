@@ -22,6 +22,7 @@ export default class AuthController {
         let response: ResBody<Partial<UserData>> = {
             message: "Datos obtenidos",
             data: {
+                id: req.userData.id,
                 role: req.userData.role,
                 name: req.userData.name,
                 profilePic: req.userData.profilePic,
