@@ -25,6 +25,7 @@ export default class AuthController {
                 id: req.userData.id,
                 role: req.userData.role,
                 name: req.userData.name,
+                lastname: req.userData.lastname,
                 profilePic: req.userData.profilePic,
                 email: req.userData.email
             }
@@ -64,7 +65,7 @@ export default class AuthController {
             throw new ErrorService("No se encontro un usuario con ese correo", user, 404);
         }
         //get user found by email hashed password
-        let { password: passwordFound, id, role, name, profilePic, emailVerified } = userFound;
+        let { password: passwordFound, id, role, name, profilePic, emailVerified, lastname } = userFound;
         //hash password from body
         let hashedPassword = await this.hashService.hashData(password);
         //same password validation
@@ -83,7 +84,8 @@ export default class AuthController {
             name,
             profilePic,
             emailVerified,
-            email
+            email,
+            lastname
         })
         res.cookie("access_token", `Bearer ${token}`, {
             httpOnly: true,

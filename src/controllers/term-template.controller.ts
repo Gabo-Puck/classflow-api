@@ -20,7 +20,8 @@ export default class TermTemplateController {
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
         let { email, name } = req.body;
-        const usuarios = await this.termTemplateService.getAllTemplates();
+        let { id } = req.userData;
+        const usuarios = await this.termTemplateService.getAllTemplates(id);
         const response: ResBody<any[]> = {
             message: "",
             data: usuarios

@@ -3,10 +3,12 @@ import HashService from "@services/hash.service";
 import ErrorService from "@appTypes/Error";
 import { TermTemplate } from "@models/index";
 import { prisma } from "@libs/prisma"
+import GeneralService from "./general.service";
 
 
 export default class TermTemplateService {
     hashService = new HashService();
+    generalService = new GeneralService();
     public async createTemplate(template: TermTemplate, idUser: number): Promise<TermTemplate> {
         //search for template with the required email
 
@@ -86,6 +88,7 @@ export default class TermTemplateService {
         //parse user input to prisma obj
         let updateRequest = {
             ...updateTemplate,
+            updatedAt: undefined,
             termDetails: {
                 create: template.termDetails.map((value) => ({
                     ...value,
@@ -163,8 +166,12 @@ export default class TermTemplateService {
         }
 
     }
-    public async getAllTemplates() {
-        const result = await prisma.termTemplate.findMany();
+    public async getAllTemplates(creatorId: number) {
+        const result = await prisma.termTemplate.findMany({
+            where: {
+                creatorId
+            }
+        });
         return result;
     }
 }
