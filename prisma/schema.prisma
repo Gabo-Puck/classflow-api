@@ -27,6 +27,7 @@ model User {
   GroupDetails     GroupDetails[]
   Deliverable      Deliverable[]
   Notice           Notice[]
+  FormTemplate     FormTemplate[]
 }
 
 model Group {
@@ -73,20 +74,22 @@ model GroupDetails {
 }
 
 model Assignment {
-  id           Int            @id @default(autoincrement())
-  title        String
-  categoryId   Int
-  category     TermCategories @relation(fields: [categoryId], references: [id])
-  latePenalty  Boolean        @default(false)
-  penaltyValue Decimal        @default(0)
-  dueAt        DateTime
-  groupId      Int
-  formId       Int
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  form         Form?          @relation(fields: [formId], references: [id])
-  group        Group          @relation(fields: [groupId], references: [id])
-  Deliverable  Deliverable[]
+  id             Int            @id @default(autoincrement())
+  title          String
+  categoryId     Int
+  category       TermCategories @relation(fields: [categoryId], references: [id])
+  latePenalty    Boolean        @default(false)
+  penaltyValue   Decimal        @default(0)
+  dueAt          DateTime
+  groupId        Int
+  formId         Int?
+  autoGrade      Boolean?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  form           Form?
+  group          Group          @relation(fields: [groupId], references: [id])
+  Deliverable    Deliverable[]
+  formTemplateId Int?
 }
 
 model Deliverable {
@@ -133,11 +136,26 @@ model AnswerDeliverable {
   id            Int         @id @default(autoincrement())
   deliverableId Int
   deliverable   Deliverable @relation(fields: [deliverableId], references: [id])
+  answers       String
 }
 
 model Form {
-  id         Int          @id @default(autoincrement())
-  Assignment Assignment[]
+  id           Int        @id @default(autoincrement())
+  name         String
+  questions    String
+  Assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  creatorId Int
+  assignmentId Int        @unique
+}
+
+model FormTemplate {
+  id        Int    @id @default(autoincrement())
+  name      String
+  questions String
+  creatorId Int
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  Creator   User   @relation(fields: [creatorId], references: [id])
 }
 
 model ClassEnrollment {
