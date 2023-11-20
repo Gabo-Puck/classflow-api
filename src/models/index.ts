@@ -6,3 +6,4 @@ export * from "./FormTemplate";
 export * from "./TermTemplateDetails";
 export * from "./Class";
 export * from "./Group"
+export * from "./Assignment"

@@ -132,3 +132,8 @@ dist
 build/
 
 prisma/dev.db
+
+/storage/*/*.png
+/storage/*/*.zip
+/storage/*/*.jpg
+/storage/*/*.pdf

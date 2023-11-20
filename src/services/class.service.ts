@@ -191,6 +191,13 @@ export default class ClassService {
                         archived: false,
                         deleted: false,
                     }
+                },
+                include: {
+                    terms: {
+                        include: {
+                            termCategories: true
+                        }
+                    }
                 }
             });
             return result;

@@ -59,6 +59,7 @@ model Class {
   enrolledStudents ClassEnrollment[]
   Group            Group[]
   Notice           Notice[]
+  Assignment       Assignment[]
 }
 
 model GroupDetails {
@@ -74,22 +75,25 @@ model GroupDetails {
 }
 
 model Assignment {
-  id             Int            @id @default(autoincrement())
+  id             Int              @id @default(autoincrement())
   title          String
+  description    String
   categoryId     Int
-  category       TermCategories @relation(fields: [categoryId], references: [id])
-  latePenalty    Boolean        @default(false)
-  penaltyValue   Decimal        @default(0)
+  category       TermCategories   @relation(fields: [categoryId], references: [id])
+  latePenalty    Boolean          @default(false)
+  penaltyValue   Decimal          @default(0)
   dueAt          DateTime
   groupId        Int
   formId         Int?
   autoGrade      Boolean?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   form           Form?
-  group          Group          @relation(fields: [groupId], references: [id])
+  group          Group            @relation(fields: [groupId], references: [id])
+  class          Class            @relation(fields: [classId], references: [id])
   Deliverable    Deliverable[]
-  formTemplateId Int?
+  classId        Int
+  AssignmentFile AssignmentFile[]
 }
 
 model Deliverable {
@@ -116,7 +120,24 @@ model FileDeliverable {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   deliverableId Int
-  deliverable   Deliverable @relation(fields: [deliverableId], references: [id])
+  deliverable   Deliverable @relation(fields: [deliverableId], references: [id], onDelete: Cascade)
+}
+
+model AssignmentFile {
+  class        Assignment @relation(fields: [assignmentId], references: [id])
+  assignmentId Int
+  file         File       @relation(fields: [fileId], references: [id])
+  fileId       Int
+  @@id([assignmentId, fileId])
+}
+
+model File {
+  id             Int              @id @default(autoincrement())
+  filename       String
+  path           String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  AssignmentFile AssignmentFile[]
 }
 
 model NoteDeliverable {
@@ -124,7 +145,7 @@ model NoteDeliverable {
   noteId        Int
   note          Note        @relation(fields: [noteId], references: [id])
   deliverableId Int
-  deliverable   Deliverable @relation(fields: [deliverableId], references: [id])
+  deliverable   Deliverable @relation(fields: [deliverableId], references: [id], onDelete: Cascade)
 }
 
 model Note {
@@ -135,27 +156,31 @@ model Note {
 model AnswerDeliverable {
   id            Int         @id @default(autoincrement())
   deliverableId Int
-  deliverable   Deliverable @relation(fields: [deliverableId], references: [id])
+  deliverable   Deliverable @relation(fields: [deliverableId], references: [id], onDelete: Cascade)
   answers       String
 }
 
 model Form {
   id           Int        @id @default(autoincrement())
   name         String
+  description  String     @default("")
   questions    String
-  Assignment   Assignment @relation(fields: [assignmentId], references: [id])
-  creatorId Int
+  Assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  creatorId    Int
   assignmentId Int        @unique
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model FormTemplate {
-  id        Int    @id @default(autoincrement())
-  name      String
-  questions String
-  creatorId Int
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  Creator   User   @relation(fields: [creatorId], references: [id])
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String   @default("")
+  questions   String
+  creatorId   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Creator     User     @relation(fields: [creatorId], references: [id])
 }
 
 model ClassEnrollment {

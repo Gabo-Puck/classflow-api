@@ -157,8 +157,15 @@ export default class GroupService {
         }
 
     }
-    public async getAllTemplates() {
-        const result = await prisma.group.findMany();
+    public async getAllTemplates(query: string, classId: number) {
+        const result = await prisma.group.findMany({
+            where: {
+                name: {
+                    contains: query
+                },
+                classId
+            }
+        });
         return result;
     }
 }

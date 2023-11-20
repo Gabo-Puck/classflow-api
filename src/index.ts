@@ -16,6 +16,8 @@ import groupsRouter from '@routes/groups.router';
 import enrollmentRouter from '@routes/enrollment.router';
 import noticeRouter from '@routes/notice.router';
 import formTemplateRouter from '@routes/form-template.router';
+import assignmentRouter from '@routes/assignment.router';
+import bodyParser from 'body-parser';
 
 
 const port = PORT || 8000;
@@ -27,9 +29,10 @@ app.use(cors({
     credentials:true
 }))
 app.use(cookieParser())
-app.use(express.json());
+app.use(bodyParser.json({limit: '850mb'}));
+app.use(bodyParser.urlencoded({limit: '850mb'}));
 app.use(express.static("public"));
-app.use(morgan("tiny"));
+app.use(morgan("combined"));
 app.use("/", auth.getToken)
 app.use("/ping", routerPing);
 app.use("/authorization", authRouter);
@@ -40,6 +43,7 @@ app.use("/groups", auth.verifyToken, groupsRouter);
 app.use("/enrollments", auth.verifyToken, enrollmentRouter);
 app.use("/notices", auth.verifyToken, noticeRouter);
 app.use("/form-templates", auth.verifyToken, formTemplateRouter);
+app.use("/assignment", auth.verifyToken, assignmentRouter);
 
 //error handler for service errors 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
