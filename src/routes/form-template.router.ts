@@ -9,6 +9,7 @@ formTemplateRouter.post("/create", asyncHandler(formController.create.bind(formC
 formTemplateRouter.put("/edit", asyncHandler(formController.update.bind(formController)));
 formTemplateRouter.get("/:id", asyncHandler(formController.get.bind(formController)));
 formTemplateRouter.get("/", asyncHandler(formController.getAll.bind(formController)));
+formTemplateRouter.post("/", asyncHandler(formController.getAllPost.bind(formController)));
 formTemplateRouter.delete("/:id", asyncHandler(formController.delete.bind(formController)));
 
 export default formTemplateRouter;

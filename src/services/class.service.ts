@@ -296,6 +296,31 @@ export default class ClassService {
         return code;
     }
 
+    public async getTerms(classId: number, query: string) {
+        const result = await prisma.term.findMany({
+            take: 10,
+            where: {
+                name: {
+                    contains: query
+                },
+                classId
+            }
+        });
+        return result;
+    }
+    public async getTermsCategory(termId: number, query: string) {
+        const result = await prisma.termCategories.findMany({
+            take: 10,
+            where: {
+                name: {
+                    contains: query
+                },
+                termId
+            }
+        });
+        return result;
+    }
+
     public async enrollStudent(studentId: number, code: string) {
         let classFound = await this.getClassByCode(code);
         //validations

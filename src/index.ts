@@ -18,6 +18,7 @@ import noticeRouter from '@routes/notice.router';
 import formTemplateRouter from '@routes/form-template.router';
 import assignmentRouter from '@routes/assignment.router';
 import bodyParser from 'body-parser';
+import path from 'path';
 
 
 const port = PORT || 8000;
@@ -26,12 +27,13 @@ const auth = new AuthorizationMiddleware();
 
 app.use(cors({
     origin: ORIGINS,
-    credentials:true
+    credentials: true
 }))
 app.use(cookieParser())
-app.use(bodyParser.json({limit: '850mb'}));
-app.use(bodyParser.urlencoded({limit: '850mb'}));
-app.use(express.static("public"));
+app.use(bodyParser.json({ limit: '850mb' }));
+app.use(bodyParser.urlencoded({ limit: '850mb' }));
+// app.use(express.static("public"));
+app.use("/storage", express.static("storage"));
 app.use(morgan("combined"));
 app.use("/", auth.getToken)
 app.use("/ping", routerPing);

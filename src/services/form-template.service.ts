@@ -137,11 +137,15 @@ export default class FormTemplateService {
         }
 
     }
-    public async getAllTemplates(creatorId: number) {
+    public async getAllTemplates(creatorId: number, query: string = "") {
         const result = await prisma.formTemplate.findMany({
             where: {
-                creatorId
-            }
+                creatorId,
+                name: {
+                    contains: query
+                }
+            },
+            take: 10
         });
         return result;
     }

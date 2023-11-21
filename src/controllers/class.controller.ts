@@ -31,7 +31,29 @@ export default class ClassController {
     public async getPossibleInvitations(req: Request, res: Response, next: NextFunction) {
         let { userData: { id }, body } = req;
         let { email } = req.body;
-        const classResponse = await this.classService.getAllUsersInvite(id,email);
+        const classResponse = await this.classService.getAllUsersInvite(id, email);
+        const response: ResBody<any> = {
+            message: "",
+            data: classResponse
+        }
+        res.status(200).json(response);
+        return
+    }
+    public async getTerms(req: Request, res: Response, next: NextFunction) {
+        let { userData: { id, classId }, body } = req;
+        let { query } = req.body;
+        const classResponse = await this.classService.getTerms(classId as number, query);
+        const response: ResBody<any> = {
+            message: "",
+            data: classResponse
+        }
+        res.status(200).json(response);
+        return
+    }
+    public async getCategories(req: Request, res: Response, next: NextFunction) {
+        // let { userData: { id, classId }, body } = req;
+        let { query, termId } = req.body;
+        const classResponse = await this.classService.getTermsCategory(termId as number, query);
         const response: ResBody<any> = {
             message: "",
             data: classResponse

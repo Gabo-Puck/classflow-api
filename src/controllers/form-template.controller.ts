@@ -27,6 +27,17 @@ export default class FormTemplateController {
         res.status(200).json(response);
         return
     }
+    public async getAllPost(req: Request, res: Response, next: NextFunction) {
+        let { id } = req.userData;
+        let { query } = req.body;
+        const templates = await this.formTemplateService.getAllTemplates(id, query);
+        const response: ResBody<any[]> = {
+            message: "",
+            data: templates
+        }
+        res.status(200).json(response);
+        return
+    }
 
     public async get(req: Request, res: Response, next: NextFunction) {
         let { id } = req.params;

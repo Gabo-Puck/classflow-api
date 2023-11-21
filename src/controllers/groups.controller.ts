@@ -18,7 +18,7 @@ export default class GroupsController {
     }
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
-        let { query } = req.query;
+        let { query } = req.body;
         let { userData: { classId } } = req;
         const usuarios = await this.groupsService.getAllTemplates(query as string, classId as number);
         const response: ResBody<any[]> = {

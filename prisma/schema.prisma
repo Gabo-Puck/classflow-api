@@ -80,6 +80,7 @@ model Assignment {
   description    String
   categoryId     Int
   category       TermCategories   @relation(fields: [categoryId], references: [id])
+  lateDelivery   Boolean          @default(false)
   latePenalty    Boolean          @default(false)
   penaltyValue   Decimal          @default(0)
   dueAt          DateTime
@@ -128,6 +129,7 @@ model AssignmentFile {
   assignmentId Int
   file         File       @relation(fields: [fileId], references: [id])
   fileId       Int
+
   @@id([assignmentId, fileId])
 }
 
