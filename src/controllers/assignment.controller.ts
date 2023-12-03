@@ -14,6 +14,7 @@ export default class AssignmentController {
     fileService = new FileService();
     public async create(req: Request, res: Response, next: NextFunction) {
         let { body, userData: { classId } } = req;
+        console.log({ x: req.userData });
         const usuario = await this.assignmentService.create(body, classId as number);
         const response: ResBody<any> = {
             message: "Usuario creado correctamente",

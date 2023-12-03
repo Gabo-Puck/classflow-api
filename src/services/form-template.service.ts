@@ -58,6 +58,17 @@ export default class FormTemplateService {
 
         return createdTemplate;
     }
+    public async stringifyQuestions(form: FormTemplate) {
+        let data = form.questions.map((m) => {
+            m.id = crypto.randomUUID();
+            if (m.payload.type === QuestionTypes.CLOSED || m.payload.type === QuestionTypes.MULTIPLE) {
+                m.payload.data = m.payload.data.map((v) => ({ ...v, id: crypto.randomUUID() }))
+            }
+            return m;
+        })
+        return data;
+    }
+
     public async deleteTemplate(id: number) {
         await this.getFormTemplateDetails(id);
         const result = await prisma.formTemplate.delete({

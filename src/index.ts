@@ -5,7 +5,7 @@ import morgan from "morgan";
 import routerPing from "@routes/ping.router";
 import authRouter from "@routes/auth.router";
 import AuthorizationMiddleware from "@middleware/authorization.middleware";
-import { DOMAIN, ORIGINS, PORT } from "./env";
+import { CLASSFLOW_SELF_HOST, DOMAIN, ORIGINS, PORT } from "./env";
 import usuarioRouter from "@routes/user.router";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -34,8 +34,20 @@ app.use(bodyParser.json({ limit: '850mb' }));
 app.use(bodyParser.urlencoded({ limit: '850mb' }));
 // app.use(express.static("public"));
 app.use("/storage", express.static("storage"));
+app.get('/download', function (req, res) {
+    let resource = req.query.resource as string;
+    let filename = req.query.filename as string;
+    if (!resource)
+        return res.status(400).json(new ErrorService("Please specify a resource", "", 400));
+    if (!filename)
+        return res.status(400).json(new ErrorService("Please specify a filename", "", 400));
+    res.download(resource.replace(`${CLASSFLOW_SELF_HOST}/`, ""), filename);
+});
 app.use(morgan("combined"));
-app.use("/", auth.getToken)
+import asyncHandler from "express-async-handler"
+app.use("/", (req, res, next) => {
+    Promise.resolve().then(next).catch(next)
+}, auth.getToken)
 app.use("/ping", routerPing);
 app.use("/authorization", authRouter);
 app.use("/users", usuarioRouter);
@@ -46,7 +58,6 @@ app.use("/enrollments", auth.verifyToken, enrollmentRouter);
 app.use("/notices", auth.verifyToken, noticeRouter);
 app.use("/form-templates", auth.verifyToken, formTemplateRouter);
 app.use("/assignment", auth.verifyToken, assignmentRouter);
-
 //error handler for service errors 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
     if (error instanceof ErrorService) {

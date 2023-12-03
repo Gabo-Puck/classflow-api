@@ -81,8 +81,7 @@ model Assignment {
   categoryId     Int
   category       TermCategories   @relation(fields: [categoryId], references: [id])
   lateDelivery   Boolean          @default(false)
-  latePenalty    Boolean          @default(false)
-  penaltyValue   Decimal          @default(0)
+  latePenalty    Int              @default(0)
   dueAt          DateTime
   groupId        Int
   formId         Int?
@@ -125,9 +124,9 @@ model FileDeliverable {
 }
 
 model AssignmentFile {
-  class        Assignment @relation(fields: [assignmentId], references: [id])
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
   assignmentId Int
-  file         File       @relation(fields: [fileId], references: [id])
+  file         File       @relation(fields: [fileId], references: [id], onDelete: Cascade)
   fileId       Int
 
   @@id([assignmentId, fileId])
@@ -136,6 +135,7 @@ model AssignmentFile {
 model File {
   id             Int              @id @default(autoincrement())
   filename       String
+  ext            String           @default("")
   path           String
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt

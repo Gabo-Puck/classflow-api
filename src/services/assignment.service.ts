@@ -12,12 +12,15 @@ import { assign } from "nodemailer/lib/shared";
 import { Decimal } from "@prisma/client/runtime/library";
 import FileService from "./file.service";
 import { CREATE, DELETE } from "@controllers/assignment.controller";
+import FormTemplateService from "./form-template.service";
 export default class AssignmentService {
     generalService = new GeneralService();
     fileService = new FileService();
+    formTemplateService = new FormTemplateService();
     public async create(assignment: AssingmentCreate, classId: number) {
         //search for template with the required email
         // let x: AssingmentCreate = 
+        console.log({ assignment, classId });
         let foundTemplate = await prisma.assignment.findFirst({
             where: {
                 title: assignment.title,
@@ -33,30 +36,35 @@ export default class AssignmentService {
                 400
             );
         }
-        let { form, files, ...body } = { ...assignment };
         assignment.classId = classId;
+        let { form, AssignmentFile: files, ...body } = { ...assignment };
+        let filesConnect = [];
         for (let index = 0; index < files.length; index++) {
-            const element = files[index];
-            let type = element.type;
+            const element = files[index].file;
             if (element.type == CREATE) {
-                type
-                await this.fileService.save(element.filename, element.base64, "storage/assignment")
+                let file = await this.fileService.save(element.filename, element.base64, "storage/assignment")
+                filesConnect.push({ fileId: file.id })
             }
             if (element.type == DELETE) {
                 this.fileService.delete(element.id)
             }
         }
+
         let createdTemplate = await prisma.assignment.create({
             data: {
                 ...body,
                 form: !form ? undefined : {
                     create: {
-                        ...form
+                        ...form,
+                        questions: JSON.stringify(await this.formTemplateService.stringifyQuestions(form))
                     }
+                },
+                description: JSON.stringify(body.description),
+                AssignmentFile: {
+                    create: filesConnect
                 }
             }
         })
-
 
         return createdTemplate;
     }
@@ -113,6 +121,7 @@ export default class AssignmentService {
     }
 
     public async updateAssignment(assignment: Assignment, classId: number) {
+
         let foundTemplate = await prisma.assignment.findFirst({
             where: {
                 title: assignment.title,
@@ -124,6 +133,7 @@ export default class AssignmentService {
 
         //found validation
         if (foundTemplate !== null) {
+            console.log("XD");
             throw new ErrorService(
                 "Ya existe una plantilla de formulario con ese nombre",
                 assignment,
@@ -131,17 +141,18 @@ export default class AssignmentService {
             );
         }
         //parse user input to prisma obj
-        let { form, files, ...body } = { ...assignment };
+        let { form, AssignmentFile: files, ...body } = { ...assignment };
         assignment.classId = classId;
+        let filesConnect = [];
+
         for (let index = 0; index < files.length; index++) {
-            const element = files[index];
-            let type = element.type;
+            const element = files[index].file;
             if (element.type == CREATE) {
-                type
-                await this.fileService.save(element.filename, element.base64, "storage/assignment")
+                let file = await this.fileService.save(element.filename, element.base64, "storage/assignment")
+                filesConnect.push({ fileId: file.id })
             }
             if (element.type == DELETE) {
-                this.fileService.delete(element.id)
+                await this.fileService.delete(element.id)
             }
         }
         let formOp = undefined;
@@ -150,13 +161,15 @@ export default class AssignmentService {
             formOp = {
                 upsert: {
                     update: {
-                        ...form
+                        ...form,
+                        questions: JSON.stringify(await this.formTemplateService.stringifyQuestions(form))
                     },
                     create: {
-                        ...form
+                        ...form,
+                        questions: JSON.stringify(await this.formTemplateService.stringifyQuestions(form))
                     },
                     where: {
-                        id: form.id,
+                        assignmentId: body.id,
                     }
                 }
             }
@@ -166,7 +179,7 @@ export default class AssignmentService {
                 assignmentId: assignment.id
             }
         });
-        console.log({ formFound });
+
         if (assignment.form === undefined && formFound !== null) {
             //delete ops
             formOp = {
@@ -176,12 +189,20 @@ export default class AssignmentService {
             }
         }
         console.log({ ...formOp });
+
+        body.description = JSON.stringify(body.description)
         let updatedTemplate = await prisma.assignment.update({
             data: formOp == undefined ? {
                 ...body,
+                AssignmentFile: {
+                    create: filesConnect
+                }
             } : {
                 ...body,
-                form: formOp
+                form: formOp,
+                AssignmentFile: {
+                    create: filesConnect
+                }
             },
             where: {
                 id: assignment.id
@@ -189,6 +210,8 @@ export default class AssignmentService {
         })
 
         return updatedTemplate;
+
+
     }
 
     public async getAssignmentDetails(id: number) {
@@ -200,18 +223,32 @@ export default class AssignmentService {
                 include: {
                     group: {
                         select: {
+                            name: true,
                             id: true
                         }
                     },
-                    form: {
+                    category: {
                         select: {
-                            id: true,
-                            name: true
+                            name: true,
+                            termDetails: {
+                                select: {
+                                    name: true
+                                }
+                            }
+
+                        }
+                    },
+                    form: true,
+                    AssignmentFile: {
+                        select: {
+                            file: true
                         }
                     }
                 }
             });
-            return result;
+            if (result.form)
+                result.form.questions = JSON.parse(result.form.questions)
+            return { ...result, description: JSON.parse(result.description) };
         } catch (error: any) {
             if (error.code === 'P2025') {
                 throw new ErrorService(

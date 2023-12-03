@@ -4,14 +4,14 @@
   },
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs",
+    "module": "NodeNext",
     "outDir": "./build",
     "strict": true,
     "esModuleInterop": true,
     "baseUrl": ".",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "NodeNext",
     "paths": {
       "@controllers/*": ["src/controllers/*"],
       "@middleware/*": ["src/middleware/*"],

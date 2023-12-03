@@ -5,6 +5,7 @@ import { writeFile, unlink } from "fs/promises";
 import dayjs from "dayjs";
 import ErrorService from "@appTypes/Error";
 import { File } from "@prisma/client";
+import { CLASSFLOW_SELF_HOST } from "@env";
 
 export default class FileService {
     public async write(classId: number) {
@@ -44,7 +45,7 @@ export default class FileService {
     public async saveBase64ToFileAsync(base64String: string, folder: string) {
         try {
             // Convert base64 to buffer
-            const { fileTypeFromBuffer } = await (eval('import("file-type")') as Promise<typeof import('file-type')>);
+            const { fileTypeFromBuffer } = await (eval('import("file-type")'));
             const fileBuffer = Buffer.from(base64String, 'base64');
 
             // Detect file type
@@ -57,6 +58,7 @@ export default class FileService {
             console.log({ type });
             let storagePath = ""
             let filename = await this.generateFilename(type.ext);
+
             storagePath = `${folder}/${filename}`
             // Validate file size (max: 10MB)
             const maxSizeInBytes = 10 * 1024 * 1024; // 10MB
@@ -74,7 +76,7 @@ export default class FileService {
 
             // Write to file asynchronously
             await writeFile(storagePath, fileBuffer);
-            return storagePath;
+            return { path: storagePath, ext: fileExtension };
         } catch (error) {
             console.log(error);
             throw new ErrorService("Algo ha salido mal al guardar la imagen", "", 500)
@@ -83,11 +85,12 @@ export default class FileService {
 
     public async save(filename: string, base64String: string, folder: string): Promise<File> {
         try {
-            let path = await this.saveBase64ToFileAsync(base64String, folder);
+            let { path, ext } = await this.saveBase64ToFileAsync(base64String, folder);
             let file = await prisma.file.create({
                 data: {
                     filename,
-                    path,
+                    path: `${CLASSFLOW_SELF_HOST}/${path}`,
+                    ext
                 }
             })
             return file
@@ -120,13 +123,14 @@ export default class FileService {
     public async delete(id: number) {
         try {
             let { path } = await this.get(id);
-            await this.deleteFile(path);
+            await this.deleteFile(path.replace(`${CLASSFLOW_SELF_HOST}/`, ""));
             let file = await prisma.file.delete({
                 where: {
                     id
                 }
             });
         } catch (error) {
+            console.log("ASRIKREI");
             throw error
         }
 
