@@ -17,6 +17,7 @@ classRouter.post("/users/invite", auth.verifyProfessor.bind(auth), asyncHandler(
 classRouter.post("/terms/", auth.verifyProfessor.bind(auth), asyncHandler(classController.getTerms.bind(classController)));
 classRouter.post("/termsCategories/", auth.verifyProfessor.bind(auth), asyncHandler(classController.getCategories.bind(classController)));
 classRouter.get("/regenerateCode", auth.verifyProfessor.bind(auth), asyncHandler(classController.regenerateCode.bind(classController)));
+classRouter.get("/members", asyncHandler(classController.getClassMembers.bind(classController)));
 classRouter.get("/:id", asyncHandler(classController.get.bind(classController)));
 classRouter.get("/", asyncHandler(classController.getAll.bind(classController)));
 classRouter.delete("/:id", auth.verifyProfessor.bind(auth), asyncHandler(classController.delete.bind(classController)));

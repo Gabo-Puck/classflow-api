@@ -66,7 +66,8 @@ export default class ClassService {
             GroupDetails: [{
                 groupRole: GROUP_ROLES.PROFESSOR,
                 userId: idUser,
-            }]
+            }],
+            default: true
         })
         console.log({ group });
         return createdClass;
@@ -340,6 +341,23 @@ export default class ClassService {
         })
         return enroll
     }
+
+    public async getClassMembers(classId: number) {
+        console.log({ AYUDA: classId });
+        await this.getClassDetails(classId);
+        let classFound = await prisma.user.findMany({
+            where: {
+                classEnrollments: {
+                    some: {
+                        classId
+                    }
+                }
+            },
+
+        })
+        return classFound;
+    }
+
     /**
     * Retrieves all users that can be invited to a class
     * This means that retrieves all users that currently are not enrolled in or don't have an 

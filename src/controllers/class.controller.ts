@@ -39,6 +39,16 @@ export default class ClassController {
         res.status(200).json(response);
         return
     }
+    public async getClassMembers(req: Request, res: Response, next: NextFunction) {
+        let { userData: { classId }, body } = req;
+        const classResponse = await this.classService.getClassMembers(classId as number);
+        const response: ResBody<any> = {
+            message: "",
+            data: classResponse
+        }
+        res.status(200).json(response);
+        return
+    }
     public async getTerms(req: Request, res: Response, next: NextFunction) {
         let { userData: { id, classId }, body } = req;
         let { query } = req.body;

@@ -38,6 +38,7 @@ model Group {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   archived     Boolean        @default(false)
+  default      Boolean        @default(true)
   GroupDetails GroupDetails[]
   Assignment   Assignment[]
 }

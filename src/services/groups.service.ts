@@ -119,6 +119,21 @@ export default class GroupService {
         });
         return result;
     }
+    public async getGroupsByClass(idClass: number) {
+        const result = await prisma.group.findMany({
+            where: {
+                classId: idClass,
+            },
+            include: {
+                GroupDetails: {
+                    include: {
+                        user: true
+                    }
+                }
+            }
+        });
+        return result;
+    }
     public async archiveGroup(idGroup: number) {
         const result = await prisma.group.update({
             data: {

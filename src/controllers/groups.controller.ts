@@ -53,6 +53,18 @@ export default class GroupsController {
         return
 
     }
+    public async getByClass(req: Request, res: Response, next: NextFunction) {
+        let { userData: { id }, params: { idClass } } = req;
+        let response: ResBody<any>;
+        const grupo = await this.groupsService.getGroupsByClass(Number(idClass));
+        response = {
+            message: "",
+            data: grupo
+        }
+        res.status(200).json(response);
+        return
+
+    }
     public async update(req: Request, res: Response, next: NextFunction) {
         let { body } = req;
         const grupo = await this.groupsService.updateGroup(body);
