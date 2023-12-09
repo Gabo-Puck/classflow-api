@@ -7,7 +7,10 @@ import GroupsService from "@services/groups.service";
 export default class GroupsController {
     groupsService = new GroupsService();
     public async create(req: Request, res: Response, next: NextFunction) {
-        let { body } = req;
+        let { body, userData: {
+            classId
+        } } = req;
+        body = { ...body, classId };
         const grupo = await this.groupsService.createGroup(body);
         const response: ResBody<any> = {
             message: "Grupo creado correctamente",

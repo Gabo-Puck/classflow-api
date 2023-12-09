@@ -28,6 +28,7 @@ export default class GroupService {
         //parse user input to prisma obj
         let insertGroup = {
             ...group,
+            id: undefined,
             GroupDetails: {
                 create: group.GroupDetails
             }
@@ -163,7 +164,7 @@ export default class GroupService {
         } catch (error: any) {
             if (error.code === 'P2025') {
                 throw new ErrorService(
-                    "No se encontro la plantilla",
+                    "No se encontro el grupo",
                     { id },
                     404
                 )
