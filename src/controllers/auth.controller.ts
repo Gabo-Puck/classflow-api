@@ -54,6 +54,30 @@ export default class AuthController {
         return
 
     }
+    async sendPasswordChange(req: Request, res: Response, next: NextFunction) {
+        try {
+
+            let { email } = req.body;
+            let userFound = await this.userService.getUserByEmail(email);
+            //no user found validation
+            if (userFound === null) {
+                throw new ErrorService("No se encontro un usuario con ese correo", email, 404);
+            }
+            if (!userFound.emailVerified) {
+                throw new ErrorService("Esta cuenta no se encuentra validada", email, 400);
+            }
+            await this.userService.sendPasswordChange(email, userFound.id);
+            let response: ResBody<string> = {
+                message: "Correo enviado",
+                data: ""
+            }
+            res.status(200).json(response);
+            return
+        } catch (error) {
+            console.log(error);
+        }
+        return;
+    }
     async getTokenUser(req: Request, res: Response, next: NextFunction) {
         let user = req.body as Prisma.UserCreateInput;
         //extract values from body

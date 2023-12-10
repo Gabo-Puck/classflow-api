@@ -44,7 +44,6 @@ app.get('/download', function (req, res) {
     res.download(resource.replace(`${CLASSFLOW_SELF_HOST}/`, ""), filename);
 });
 app.use(morgan("combined"));
-import asyncHandler from "express-async-handler"
 app.use("/", (req, res, next) => {
     Promise.resolve().then(next).catch(next)
 }, auth.getToken)

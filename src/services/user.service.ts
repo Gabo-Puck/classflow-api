@@ -44,6 +44,13 @@ export default class UserService {
             <a href="${CLASSFLOW_HOST_FRONTEND}/validate?token=${token}">Validar cuenta</a>
         `)
     }
+    public async sendPasswordChange(email: string, id: number) {
+        let token = await this.authService.getTokenChangePassword(id);
+        this.emailService.sendEmail(email, "Cambio de contraseña", `
+            <p>Accede al siguiente enlace para cambiar tu contraseña</p>
+            <a href="${CLASSFLOW_HOST_FRONTEND}/change-password?token=${token}">Cambiar contraseña</a>
+        `)
+    }
     public async deleteUser(id: number): Promise<Prisma.UserUncheckedCreateInput> {
         const result = await this.prisma.user.delete({
             where: {
@@ -103,6 +110,69 @@ export default class UserService {
                 },
                 data: {
                     emailVerified: true
+                }
+            })
+
+        } catch (error: any) {
+            if (error instanceof TokenExpiredError) {
+                throw new ErrorService(
+                    "El token ha caducado",
+                    "",
+                    401
+                )
+            }
+            if (error instanceof JsonWebTokenError) {
+                throw new ErrorService(
+                    "El token es inválido",
+                    "",
+                    400
+                )
+            }
+            throw new ErrorService(
+                "Ha sucedido un error validando tu cuenta",
+                "",
+                500
+            )
+        }
+        return "ok"
+    }
+    public async changePasswordValidate(token: string) {
+        try {
+            console.log({ AYUDA: token });
+            return await this.authService.validateChangePasswordToken(token);
+        } catch (error: any) {
+            console.log({ e:typeof error });
+            if (error instanceof TokenExpiredError) {
+                throw new ErrorService(
+                    "El token ha caducado",
+                    "",
+                    401
+                )
+            }
+            if (error instanceof JsonWebTokenError) {
+                throw new ErrorService(
+                    "El token es inválido",
+                    "",
+                    400
+                )
+            }
+            throw new ErrorService(
+                "Ha sucedido un error validando tu cuenta",
+                "",
+                500
+            )
+        }
+    }
+
+    public async changePassword(token: string, password: string) {
+        try {
+            let { id } = await this.authService.validateChangePasswordToken(token);
+            const result = await this.prisma.user.update({
+                where: {
+                    id
+                },
+                data: {
+                    password: await this.hashService.hashData(password)
                 }
             })
 

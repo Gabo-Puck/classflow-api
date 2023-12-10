@@ -22,7 +22,23 @@ export default class AuthService {
      * getTokenActivateAccount
      * Create a token to validate an email. Each token expires in 10 minutes
      */
-    public getTokenVerifyEmail(id: number): Promise<string>{
+    public getTokenVerifyEmail(id: number): Promise<string> {
+        return new Promise((resolve, reject) => {
+            jwt.sign({ id }, JWT_SECRET, { expiresIn: "10m" }, (error: Error | null, token: string | undefined) => {
+                if (error != null || token === undefined) {
+                    
+                    reject(error)
+                    return;
+                }
+                resolve(token);
+            })
+        })
+    }
+    /**
+     * getTokenChangePassword
+     * Create a token to change a password. Each token expires in 10 minutes
+     */
+    public getTokenChangePassword(id: number): Promise<string> {
         return new Promise((resolve, reject) => {
             jwt.sign({ id }, JWT_SECRET, { expiresIn: "10m" }, (error: Error | null, token: string | undefined) => {
                 if (error != null || token === undefined) {
@@ -37,9 +53,25 @@ export default class AuthService {
     public validateVerifyEmailToken(token: string): Promise<{ id: number }> {
         return new Promise((resolve, reject) => {
             jwt.verify(token, JWT_SECRET, function (params: VerifyErrors | null, decoded: JwtPayload | undefined | string | { id: number }) {
-
                 if (params !== null) {
+                    console.log({ nuevo: params });
                     console.log(params);
+                    reject(params);
+                    return;
+                }
+                if (decoded !== undefined) {
+                    resolve(decoded as { id: number });
+                    return;
+                }
+                reject("Something went horribly wrong");
+            });
+        })
+    }
+
+    public validateChangePasswordToken(token: string): Promise<{ id: number }> {
+        return new Promise((resolve, reject) => {
+            jwt.verify(token, JWT_SECRET, function (params: VerifyErrors | null, decoded: JwtPayload | undefined | string | { id: number }) {
+                if (params !== null) {
                     reject(params);
                     return;
                 }

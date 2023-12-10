@@ -28,6 +28,29 @@ export default class UserController {
         return
     }
 
+    public async changePassword(req: Request, res: Response, next: NextFunction) {
+        let { token, password } = req.body;
+        const usuarios = await this.usuarioService.changePassword(token, password);
+        const response: ResBody<string> = {
+            message: "Se ha activado la cuenta",
+            data: ""
+        }
+        res.status(200).json(response);
+        return
+    }
+    public async validateChangePassword(req: Request, res: Response, next: NextFunction) {
+        let { token } = req.params;
+        const usuarios = await this.usuarioService.changePasswordValidate(token);
+        const response: ResBody<string> = {
+            message: "Se ha activado la cuenta",
+            data: ""
+        }
+        res.status(200).json(response);
+        return
+    }
+
+    
+
     public async getAll(req: Request, res: Response, next: NextFunction) {
         const usuarios = await this.usuarioService.getAllUsers();
         const response: ResBody<Prisma.UserUncheckedCreateInput[]> = {

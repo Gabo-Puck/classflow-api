@@ -353,6 +353,13 @@ export default class ClassService {
                     }
                 }
             },
+            include: {
+                classEnrollments: {
+                    where: {
+                        classId
+                    }
+                }
+            }
 
         })
         return classFound;

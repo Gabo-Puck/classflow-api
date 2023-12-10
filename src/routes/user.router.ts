@@ -11,4 +11,6 @@ usuarioRouter.delete("/:id", asyncHandler(usuarioController.delete.bind(usuarioC
 usuarioRouter.get("/:id", asyncHandler(usuarioController.get.bind(usuarioController)));
 usuarioRouter.get("/", asyncHandler(usuarioController.getAll.bind(usuarioController)));
 usuarioRouter.get("/validate/:token", asyncHandler(usuarioController.verifyEmail.bind(usuarioController)))
+usuarioRouter.get("/validate-password/:token", asyncHandler(usuarioController.validateChangePassword.bind(usuarioController)))
+usuarioRouter.post("/recover", asyncHandler(usuarioController.changePassword.bind(usuarioController)))
 export default usuarioRouter;
