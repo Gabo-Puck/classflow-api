@@ -9,7 +9,13 @@ import { DEFAULT_GROUP_NAME } from "@appTypes/DefaultGroup";
 import { GROUP_ROLES } from "@appTypes/GroupRoles";
 import { EnrollmentStatus } from "@appTypes/EnrollmentTypes";
 import GeneralService from "./general.service";
+import { GroupStatusTypes } from "@appTypes/GroupStatusTypes";
 
+const enum OrderType {
+    NEWEST,
+    OLDEST,
+    WORK,
+}
 
 export default class ClassService {
     groupService = new GroupService();
@@ -134,6 +140,10 @@ export default class ClassService {
     }
 
     public async getClassesByProfessor(idUser: number) {
+        let filter = {
+            archived: false,
+            deleted: false
+        }
         const result = await prisma.class.findMany({
             where: {
                 creatorId: idUser,
@@ -153,7 +163,31 @@ export default class ClassService {
         });
         return result;
     }
-    public async getClassesByStudent(idUser: number) {
+    public async getClassesByStudent(idUser: number, orderType: OrderType = OrderType.NEWEST) {
+        let order = {};
+        switch (orderType) {
+            case OrderType.NEWEST:
+                order = {
+                    ...order,
+                    createdAt: "asc"
+                }
+                break;
+            case OrderType.OLDEST:
+                order = {
+                    ...order,
+                    createdAt: "desc"
+                }
+                break;
+            case OrderType.WORK:
+                order = {
+                    ...order,
+                    Assignment: {
+                        _count: "asc"
+                    }
+                }
+                break;
+        }
+
         const result = await prisma.class.findMany({
             where: {
                 enrolledStudents: {
@@ -161,10 +195,7 @@ export default class ClassService {
                         studentId: idUser
                     }
                 },
-                AND: {
-                    archived: false,
-                    deleted: false,
-                }
+
             },
             include: {
                 professor: {
@@ -178,8 +209,20 @@ export default class ClassService {
                     select: {
                         enrolledStudents: true
                     }
+                },
+                Assignment: {
+                    where: {
+                        group: {
+                            GroupDetails: {
+                                some: {
+                                    userId: idUser
+                                }
+                            }
+                        }
+                    }
                 }
-            }
+            },
+            orderBy: order
         });
         return result;
     }
@@ -336,7 +379,23 @@ export default class ClassService {
             data: {
                 status: EnrollmentStatus.ENROLLED,
                 classId: classFound.id,
-                studentId
+                studentId,
+            }
+        })
+        let group = await prisma.group.update({
+            data: {
+                GroupDetails: {
+                    create: {
+                        userId: studentId,
+                        status: GroupStatusTypes.ACTIVE,
+                        groupRole: GROUP_ROLES.MEMBER
+                    }
+                }
+            },
+            where: {
+                classId: classFound.id,
+                id: undefined,
+                default: true
             }
         })
         return enroll

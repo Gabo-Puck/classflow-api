@@ -28,6 +28,7 @@ model User {
   Deliverable      Deliverable[]
   Notice           Notice[]
   FormTemplate     FormTemplate[]
+  NoticeComment    NoticeComment[]
 }
 
 model Group {
@@ -200,13 +201,27 @@ model ClassEnrollment {
 }
 
 model Notice {
+  id            Int             @id @default(autoincrement())
+  class         Class           @relation(fields: [classId], references: [id])
+  classId       Int
+  content       String          @default("")
+  title         String          @default("")
+  creator       User            @relation(fields: [creatorId], references: [id])
+  creatorId     Int
+  deleted       Boolean         @default(false)
+  deletedAt     DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  NoticeComment NoticeComment[]
+}
+
+model NoticeComment {
   id        Int       @id @default(autoincrement())
-  class     Class     @relation(fields: [classId], references: [id])
-  classId   Int
   content   String    @default("")
-  title     String    @default("")
-  creator   User      @relation(fields: [creatorId], references: [id])
-  creatorId Int
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  notice    Notice    @relation(fields: [noticeId], references: [id])
+  noticeId  Int
   deleted   Boolean   @default(false)
   deletedAt DateTime?
   createdAt DateTime  @default(now())

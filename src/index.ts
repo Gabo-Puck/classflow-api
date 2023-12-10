@@ -19,6 +19,7 @@ import formTemplateRouter from '@routes/form-template.router';
 import assignmentRouter from '@routes/assignment.router';
 import bodyParser from 'body-parser';
 import path from 'path';
+import noticeCommentRouter from '@routes/notice-comment.router';
 
 
 const port = PORT || 8000;
@@ -55,6 +56,7 @@ app.use("/classes", auth.verifyToken, classRouter);
 app.use("/groups", auth.verifyToken, groupsRouter);
 app.use("/enrollments", auth.verifyToken, enrollmentRouter);
 app.use("/notices", auth.verifyToken, noticeRouter);
+app.use("/notices-comments", auth.verifyToken, noticeCommentRouter);
 app.use("/form-templates", auth.verifyToken, formTemplateRouter);
 app.use("/assignment", auth.verifyToken, assignmentRouter);
 //error handler for service errors 

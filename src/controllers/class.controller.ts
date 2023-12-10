@@ -122,8 +122,9 @@ export default class ClassController {
     }
     public async getAllByStudent(req: Request, res: Response, next: NextFunction) {
         let { userData: { id } } = req;
+        let { order } = req.query;
         let response: ResBody<any>;
-        const classResponse = await this.classService.getClassesByStudent(Number(id));
+        const classResponse = await this.classService.getClassesByStudent(Number(id), Number(order));
         response = {
             message: "",
             data: classResponse

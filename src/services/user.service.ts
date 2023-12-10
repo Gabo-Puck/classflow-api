@@ -4,9 +4,7 @@ import ErrorService from "@appTypes/Error";
 import AuthService from "./auth.service";
 import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import EmailService from "./email.service";
-import { CLASSFLOW_HOST_FRONTEND, DOMAIN, ORIGINS } from "@env";
-import { URLSearchParams } from "url";
-import { EnrollmentStatus } from "@appTypes/EnrollmentTypes";
+import { CLASSFLOW_HOST_FRONTEND } from "@env";
 
 export default class UserService {
     prisma = new PrismaClient();
