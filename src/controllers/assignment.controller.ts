@@ -26,8 +26,13 @@ export default class AssignmentController {
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
         let { email, name } = req.body;
+        let { order, category } = req.query;
+        let params = {
+            order: Number(order),
+            category: Number(category)
+        }
         let { userData: { classId, id } } = req;
-        const usuarios = await this.assignmentService.getAllAssignments(classId as number, id);
+        const usuarios = await this.assignmentService.getAllAssignments(classId as number, id, params as any);
         const response: ResBody<any[]> = {
             message: "",
             data: usuarios
@@ -76,9 +81,7 @@ export default class AssignmentController {
         let { id } = req.params;
         let { state } = req.query;
         let { userData } = req;
-        let { base } = req.body;
         let response: ResBody<any>;
-        await this.fileService.saveBase64ToFileAsync(base, "canela");
         const usuario = await this.assignmentService.markComplete(Number(id), userData.id, Boolean(state));
         response = {
             message: "Estatus de tarea actualizado",

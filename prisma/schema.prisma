@@ -99,7 +99,6 @@ model Assignment {
 }
 
 model Deliverable {
-  id                Int                 @id @default(autoincrement())
   assignmentId      Int
   studentId         Int
   createdAt         DateTime            @default(now())
@@ -113,16 +112,19 @@ model Deliverable {
   FileDeliverable   FileDeliverable[]
   NoteDeliverable   NoteDeliverable[]
   AnswerDeliverable AnswerDeliverable[]
+
+  @@id([assignmentId, studentId])
 }
 
 model FileDeliverable {
-  id            Int         @id @default(autoincrement())
-  filename      String
-  direction     String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  deliverableId Int
-  deliverable   Deliverable @relation(fields: [deliverableId], references: [id], onDelete: Cascade)
+  id           Int         @id @default(autoincrement())
+  filename     String
+  direction    String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  studentId    Int
+  assignmentId Int
+  deliverable  Deliverable @relation(fields: [studentId,assignmentId], references: [studentId,assignmentId], onDelete: Cascade)
 }
 
 model AssignmentFile {
@@ -148,8 +150,9 @@ model NoteDeliverable {
   id            Int         @id @default(autoincrement())
   noteId        Int
   note          Note        @relation(fields: [noteId], references: [id])
-  deliverableId Int
-  deliverable   Deliverable @relation(fields: [deliverableId], references: [id], onDelete: Cascade)
+  studentId    Int
+  assignmentId Int
+  deliverable  Deliverable @relation(fields: [studentId,assignmentId], references: [studentId,assignmentId], onDelete: Cascade)
 }
 
 model Note {
@@ -159,8 +162,9 @@ model Note {
 
 model AnswerDeliverable {
   id            Int         @id @default(autoincrement())
-  deliverableId Int
-  deliverable   Deliverable @relation(fields: [deliverableId], references: [id], onDelete: Cascade)
+  studentId    Int
+  assignmentId Int
+  deliverable  Deliverable @relation(fields: [studentId,assignmentId], references: [studentId,assignmentId], onDelete: Cascade)
   answers       String
 }
 

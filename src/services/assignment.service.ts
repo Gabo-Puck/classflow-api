@@ -13,6 +13,22 @@ import { Decimal } from "@prisma/client/runtime/library";
 import FileService from "./file.service";
 import { CREATE, DELETE } from "@controllers/assignment.controller";
 import FormTemplateService from "./form-template.service";
+import { AssignmentOrderObject } from "@appTypes/Assignment";
+
+const enum AssignmentOrderEnum {
+    COMPLETED = 1,
+    PENDING,
+    NEWEST,
+    OLDEST,
+    CLASIFICATION
+}
+type AssignmentOrderByCompleted = { order: AssignmentOrderEnum.COMPLETED };
+type AssignmentOrderByPending = { order: AssignmentOrderEnum.PENDING };
+type AssignmentOrderByNewest = { order: AssignmentOrderEnum.NEWEST };
+type AssignmentOrderByOldest = { order: AssignmentOrderEnum.OLDEST };
+type AssignmentOrderByClasification = { order: AssignmentOrderEnum.CLASIFICATION, category: number };
+type AssignmentOrder = AssignmentOrderByCompleted | AssignmentOrderByPending | AssignmentOrderByNewest | AssignmentOrderByOldest | AssignmentOrderByClasification
+
 export default class AssignmentService {
     generalService = new GeneralService();
     fileService = new FileService();
@@ -96,19 +112,19 @@ export default class AssignmentService {
                     upsert: {
                         create: {
                             delivered: state,
-                            id: studentId,
                             studentId,
                             deliveredAt: new Date()
                         },
                         update: {
                             delivered: state,
-                            id: studentId,
                             studentId,
                             deliveredAt: new Date()
                         },
                         where: {
-                            id: studentId,
-                            studentId
+                            assignmentId_studentId: {
+                                assignmentId: id,
+                                studentId
+                            }
                         }
                     }
                 }
@@ -262,8 +278,63 @@ export default class AssignmentService {
 
     }
 
-    public async getAllAssignments(classId: number, userId: number) {
-        const result = await prisma.assignment.findMany({
+    public sortByCompleted(assignments: AssignmentOrderObject[]) {
+        let x = assignments.sort((a, b) => {
+            if (a.Deliverable[0] && a.Deliverable[0].delivered && (!b.Deliverable[0] || !b.Deliverable[0].delivered)) {
+                return -1; // a viene antes que b
+            } else if (b.Deliverable[0] && b.Deliverable[0].delivered && (!a.Deliverable[0] || !a.Deliverable[0].delivered)) {
+                return 1; // b viene antes que a
+            } else {
+                return 0; // no hay prioridad, mantiene el orden original
+            }
+        });
+        return x;
+    }
+
+    public sortByPending(assignments: AssignmentOrderObject[]) {
+        let x = assignments.sort((a, b) => {
+            if (a.Deliverable[0] && a.Deliverable[0].delivered && (!b.Deliverable[0] || !b.Deliverable[0].delivered)) {
+                return 1; // a viene antes que b
+            } else if (b.Deliverable[0] && b.Deliverable[0].delivered && (!a.Deliverable[0] || !a.Deliverable[0].delivered)) {
+                return -1; // b viene antes que a
+            } else {
+                return 0; // no hay prioridad, mantiene el orden original
+            }
+        });
+        return x;
+    }
+
+    public sortByClasification(assignments: AssignmentOrderObject[], category: number) {
+        return assignments.sort((a, b) => {
+            if (a.categoryId === category && b.categoryId !== category) {
+                return -1; // a viene antes que b
+            } else if (b.categoryId === category && a.categoryId !== category) {
+                return 1; // b viene antes que a
+            } else {
+                return 0; // no hay prioridad, mantiene el orden original
+            }
+        })
+    }
+
+    public async getAllAssignments(classId: number, userId: number, orderType: AssignmentOrder) {
+        let order = {};
+        console.log("AYUDA2", orderType.order)
+        switch (orderType.order) {
+            case AssignmentOrderEnum.NEWEST:
+                order = {
+                    ...order,
+                    createdAt: "asc"
+                }
+                break;
+            case AssignmentOrderEnum.OLDEST:
+                console.log(orderType.order)
+                order = {
+                    ...order,
+                    createdAt: "desc"
+                }
+                break;
+        }
+        let result = await prisma.assignment.findMany({
             where: {
                 classId,
                 group: {
@@ -272,9 +343,26 @@ export default class AssignmentService {
                             userId
                         }
                     }
+                },
+            },
+            include: {
+                Deliverable: {
+                    where: {
+                        studentId: userId
+                    }
                 }
-            }
+            },
+            orderBy: order
         });
+        if (orderType.order == AssignmentOrderEnum.COMPLETED)
+            result = this.sortByCompleted(result)
+        if (orderType.order == AssignmentOrderEnum.PENDING)
+            result = this.sortByPending(result)
+        if (orderType.order == AssignmentOrderEnum.CLASIFICATION){
+            console.log(orderType.category);
+            result = this.sortByClasification(result, orderType.category)
+
+        }
         return result;
     }
 }

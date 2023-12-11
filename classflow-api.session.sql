@@ -1,1 +1,1 @@
-delete from FormTemplate
+delete from Deliverable
